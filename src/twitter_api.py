@@ -11,12 +11,13 @@ import string
 #import preprocessor as p
 from text_preprocessing import TextPreprocessing
 import os
+from config import config
 class TwitterApi:
 
     textPreprocessing = TextPreprocessing()
     def __init__(self):
-        auth = tweepy.OAuthHandler(self.consumer_key, self.consumer_secret)
-        auth.set_access_token(self.access_key, self.access_secret)
+        auth = tweepy.OAuthHandler(config.consumer_key, config.consumer_secret)
+        auth.set_access_token(config.access_key, config.access_secret)
         self.api = tweepy.API(auth)
         self.emoji_pattern = re.compile("["
                                    u"\U0001F600-\U0001F64F"  # emoticons

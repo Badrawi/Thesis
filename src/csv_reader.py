@@ -4,7 +4,7 @@ from text_preprocessing import TextPreprocessing
 import xlrd
 class CSVReader:
     @staticmethod
-    def text_sentiment_map(file,cols):
+    def dataframe_from_file(file,cols):
         fpath = "../data/"+file
         data = pd.read_csv(fpath,sep=',',
              quotechar="'",usecols=cols)
