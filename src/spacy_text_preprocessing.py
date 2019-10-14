@@ -20,7 +20,7 @@ from keras.models import load_model
 import os
 from logger_methods import setup_logger
 import json
-
+from keras import backend as K
 get_vents_logger = setup_logger('get_vents', 'extract_progress.log')
 # Create our list of punctuation marks
 punctuations = string.punctuation
@@ -74,72 +74,86 @@ def get_embeddings(sentence):
     return mytokens
 
 if __name__ == "__main__":
-
-    airline_data = CSVReader.dataframe_from_file("Tweets.csv",['airline_sentiment','text'])
-    stress_data = CSVReader.dataframe_from_file("twitter.csv", ['original_text']).original_text
-    progress_data = CSVReader.dataframe_from_file("fit.csv", ['original_text']).original_text
-    texts = np.array(airline_data.text)
-    sentiments = np.array(airline_data.airline_sentiment)
+    # os.environ['CUDA_VISIBLE_DEVICES'] = "0"
+    # print("get gpus ",K.tensorflow_backend._get_available_gpus())
     sentiment_cahce = "sentiment_cache.npy"
     text_cache = "text_cache.npy"
-    vent_positive = np.array(ventApi.getPositiveVents())
-    vent_negative = np.array(ventApi.getNegativeVents())
+    sentiments = []
+    texts = []
     if os.path.isfile(sentiment_cahce) and os.path.isfile(text_cache):
-        sentiments = np.load(sentiment_cahce)
-        texts = np.load(text_cache)
+        sentiments = np.load(sentiment_cahce,allow_pickle=True)
+        texts = np.load(text_cache,allow_pickle=True)
     else:
-        for i in range(len(sentiments)):
-            texts[i] = textPreProcessing.remove_special_characters(texts[i], True)
-            texts[i] = textPreProcessing.remove_accented_chars(texts[i])
-            texts[i] = textPreProcessing.remove_whiteList(texts[i])
-            if (sentiments[i] == "neutral"):
-                sentiments[i] = 0
-            elif(sentiments[i] == "positive"):
-                sentiments[i] = 1
-            else:
-                sentiments[i] = -1
+        # airline_data = CSVReader.dataframe_from_file("Tweets.csv", ['airline_sentiment', 'text'])
+        # stress_data = CSVReader.dataframe_from_file("twitter.csv", ['original_text']).original_text
+        # progress_data = CSVReader.dataframe_from_file("fit.csv", ['original_text']).original_text
+        # texts = np.array(airline_data.text)
+        # sentiments = np.array(airline_data.airline_sentiment)
+        texts = []
+        sentiments = []
+        # for i in range(len(sentiments)):
+        #     texts[i] = textPreProcessing.remove_special_characters(texts[i], True)
+        #     texts[i] = textPreProcessing.remove_accented_chars(texts[i])
+        #     texts[i] = textPreProcessing.remove_whiteList(texts[i])
+        #     if (sentiments[i] == "neutral"):
+        #         sentiments[i] = 0
+        #     elif(sentiments[i] == "positive"):
+        #         sentiments[i] = 1
+        #     else:
+        #         sentiments[i] = -1
         # with multiprocessing.Pool() as pool:
         #     positive = pool.starmap(getVentsSentiment, zip(vent_positive))
         #     negative = pool.starmap(getVentsSentiment, zip(vent_negative))
-        positive = ventApi.getPositiveVents()
-        negative = ventApi.getNegativeVents()
-        np.append(texts,positive)
-        pos_sentiments = [1]*len(positive)
-        np.append(sentiments,pos_sentiments)
-        neg_sentiments = [-1] * len(negative)
-        np.append(texts, negative)
-        np.append(sentiments, neg_sentiments)
-
-        for text in stress_data:
-            text = textPreProcessing.remove_special_characters(text, True)
-            text = textPreProcessing.remove_accented_chars(text)
-            text = textPreProcessing.remove_whiteList(text)
-            texts = np.append(texts,[text])
-            sentiments = np.append(sentiments,[-2])
-        for text in progress_data:
-            text = textPreProcessing.remove_special_characters(text, True)
-            text = textPreProcessing.remove_accented_chars(text)
-            text = textPreProcessing.remove_whiteList(text)
-            texts = np.append(texts,[text])
-            sentiments = np.append(sentiments,[1])
+        good = np.array(ventApi.getVents(ventApi.EMOTION_GOOD_ID))
+        energized = np.array(ventApi.getVents(ventApi.EMOTION_ENERGIZED_ID))
+        bad = np.array(ventApi.getVents(ventApi.EMOTION_BAD_ID))
+        struggle = np.array(ventApi.getVents(ventApi.EMOTION_STRUGGLE_ID))
+        neutral = np.array(ventApi.getVents(ventApi.EMOTION_NEUTRAL_ID))
+        texts = np.append(texts,good)
+        good_sentiments = [1]*len(good)
+        sentiments = np.append(sentiments,good_sentiments)
+        energized_sentiments = [2] * len(energized)
+        texts = np.append(texts, energized)
+        sentiments = np.append(sentiments, energized_sentiments)
+        texts = np.append(texts, bad)
+        bad_sentiments = [-1] * len(bad)
+        sentiments = np.append(sentiments, bad_sentiments)
+        texts = np.append(texts, struggle)
+        struggle_sentiments = [-2] * len(struggle)
+        sentiments = np.append(sentiments,struggle_sentiments )
+        texts = np.append(texts, neutral)
+        neutral_sentiments = [0] * len(neutral)
+        sentiments = np.append(sentiments, neutral_sentiments)
+        # for text in stress_data:
+        #     text = textPreProcessing.remove_special_characters(text, True)
+        #     text = textPreProcessing.remove_accented_chars(text)
+        #     text = textPreProcessing.remove_whiteList(text)
+        #     texts = np.append(texts,[text])
+        #     sentiments = np.append(sentiments,[-2])
+        # for text in progress_data:
+        #     text = textPreProcessing.remove_special_characters(text, True)
+        #     text = textPreProcessing.remove_accented_chars(text)
+        #     text = textPreProcessing.remove_whiteList(text)
+        #     texts = np.append(texts,[text])
+        #     sentiments = np.append(sentiments,[1])
 
         np.save(text_cache,texts)
         np.save(sentiment_cahce, sentiments)
 
     sequences , word_index = get_word_index(texts)
-    categorical_sentiments = to_categorical(sentiments,num_classes=4)
+    categorical_sentiments = to_categorical(sentiments,num_classes=5)
     print("category: ",categorical_sentiments)
     X_train, X_test, Y_train, Y_test = train_test_split(texts, categorical_sentiments, test_size=0.2)
     text_embedding = np.zeros((len(word_index)+1,300))
     for word,i in word_index.items():
         text_embedding[i] = nlp(word).vector
-    rnnModel.build_model(1, text_embedding)
+    rnnModel.build_compound_model(text_embedding)
     rnnModel.model.fit(pad_sequences(tokenizer.texts_to_sequences(X_train),maxlen=MAX_SEQUENCE_LENGTH),
                        Y_train,
-                       batch_size=512,epochs=10,validation_data=(pad_sequences(tokenizer.texts_to_sequences(X_test),maxlen=MAX_SEQUENCE_LENGTH)
+                       batch_size=512,epochs=1,validation_data=(pad_sequences(tokenizer.texts_to_sequences(X_test),maxlen=MAX_SEQUENCE_LENGTH)
                                                                  ,Y_test),shuffle=True)
 
-    result = rnnModel.model.predict_classes(pad_sequences(tokenizer.texts_to_sequences([
+    result = rnnModel.model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences([
                                                                                " What happened 2 ur vegan food options?! At least say on ur site so i know I won't be able 2 eat anything for next 6 hrs #fail",
                                                                                      " I sleep hungry and It gets harder everyday",
                                                                                      "everything is great, i have lost some weight",
