@@ -21,6 +21,7 @@ import os
 from logger_methods import setup_logger
 import json
 from keras import backend as K
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 get_vents_logger = setup_logger('get_vents', 'extract_progress.log')
 # Create our list of punctuation marks
 punctuations = string.punctuation
@@ -37,6 +38,7 @@ textPreProcessing  = TextPreprocessing()
 MAX_SEQUENCE_LENGTH = 150
 rnnModel = RNN()
 tokenizer = Tokenizer(num_words=100000)
+analyser = SentimentIntensityAnalyzer()
 # Creating our tokenizer function
 def get_word_index(texts):
     # Creating our token object, which is used to create documents with linguistic annotations.
@@ -45,6 +47,10 @@ def get_word_index(texts):
     word_index = tokenizer.word_index
     sequences = pad_sequences(sequences,maxlen=MAX_SEQUENCE_LENGTH)
     return sequences,word_index
+def print_sentiment_scores(sentences):
+    for sentence in sentences:
+        snt = analyser.polarity_scores(sentence)
+        print("{:-<40} {}".format(sentence, str(snt)))
 def getVentsSentiment(vents):
     count = 0
     texts =[]
@@ -73,16 +79,17 @@ def get_embeddings(sentence):
     # return preprocessed list of tokens
     return mytokens
 
-if __name__ == "__main__":
+def my_model():
     # os.environ['CUDA_VISIBLE_DEVICES'] = "0"
     # print("get gpus ",K.tensorflow_backend._get_available_gpus())
     sentiment_cahce = "sentiment_cache.npy"
     text_cache = "text_cache.npy"
+    text_embedding_cache = "text_embedding.npy"
     sentiments = []
     texts = []
     if os.path.isfile(sentiment_cahce) and os.path.isfile(text_cache):
-        sentiments = np.load(sentiment_cahce,allow_pickle=True)
-        texts = np.load(text_cache,allow_pickle=True)
+        sentiments = np.load(sentiment_cahce, allow_pickle=True)
+        texts = np.load(text_cache, allow_pickle=True)
     else:
         # airline_data = CSVReader.dataframe_from_file("Tweets.csv", ['airline_sentiment', 'text'])
         # stress_data = CSVReader.dataframe_from_file("twitter.csv", ['original_text']).original_text
@@ -104,14 +111,14 @@ if __name__ == "__main__":
         # with multiprocessing.Pool() as pool:
         #     positive = pool.starmap(getVentsSentiment, zip(vent_positive))
         #     negative = pool.starmap(getVentsSentiment, zip(vent_negative))
-        good = np.array(ventApi.getVents(ventApi.EMOTION_GOOD_ID))
-        energized = np.array(ventApi.getVents(ventApi.EMOTION_ENERGIZED_ID))
-        bad = np.array(ventApi.getVents(ventApi.EMOTION_BAD_ID))
-        struggle = np.array(ventApi.getVents(ventApi.EMOTION_STRUGGLE_ID))
-        neutral = np.array(ventApi.getVents(ventApi.EMOTION_NEUTRAL_ID))
-        texts = np.append(texts,good)
-        good_sentiments = [1]*len(good)
-        sentiments = np.append(sentiments,good_sentiments)
+        good = ventApi.getVents(ventApi.EMOTION_GOOD_ID)
+        energized = ventApi.getVents(ventApi.EMOTION_ENERGIZED_ID)
+        bad = ventApi.getVents(ventApi.EMOTION_BAD_ID)
+        struggle = ventApi.getVents(ventApi.EMOTION_STRUGGLE_ID)
+        neutral = ventApi.getVents(ventApi.EMOTION_NEUTRAL_ID)
+        texts = np.append(texts, good)
+        good_sentiments = [1] * len(good)
+        sentiments = np.append(sentiments, good_sentiments)
         energized_sentiments = [2] * len(energized)
         texts = np.append(texts, energized)
         sentiments = np.append(sentiments, energized_sentiments)
@@ -120,7 +127,7 @@ if __name__ == "__main__":
         sentiments = np.append(sentiments, bad_sentiments)
         texts = np.append(texts, struggle)
         struggle_sentiments = [-2] * len(struggle)
-        sentiments = np.append(sentiments,struggle_sentiments )
+        sentiments = np.append(sentiments, struggle_sentiments)
         texts = np.append(texts, neutral)
         neutral_sentiments = [0] * len(neutral)
         sentiments = np.append(sentiments, neutral_sentiments)
@@ -137,29 +144,50 @@ if __name__ == "__main__":
         #     texts = np.append(texts,[text])
         #     sentiments = np.append(sentiments,[1])
 
-        np.save(text_cache,texts)
+        np.save(text_cache, texts)
         np.save(sentiment_cahce, sentiments)
-
-    sequences , word_index = get_word_index(texts)
-    categorical_sentiments = to_categorical(sentiments,num_classes=5)
-    print("category: ",categorical_sentiments)
+    text_embedding = []
+    sequences, word_index = get_word_index(texts)
+    categorical_sentiments = to_categorical(sentiments, num_classes=5)
     X_train, X_test, Y_train, Y_test = train_test_split(texts, categorical_sentiments, test_size=0.2)
-    text_embedding = np.zeros((len(word_index)+1,300))
-    for word,i in word_index.items():
-        text_embedding[i] = nlp(word).vector
-    rnnModel.build_compound_model(text_embedding)
-    rnnModel.model.fit(pad_sequences(tokenizer.texts_to_sequences(X_train),maxlen=MAX_SEQUENCE_LENGTH),
-                       Y_train,
-                       batch_size=512,epochs=1,validation_data=(pad_sequences(tokenizer.texts_to_sequences(X_test),maxlen=MAX_SEQUENCE_LENGTH)
-                                                                 ,Y_test),shuffle=True)
+    if os.path.isfile(text_embedding_cache):
+        text_embedding = np.load(text_embedding_cache, allow_pickle=True)
+    else:
+        text_embedding = np.zeros((len(word_index) + 1, 300))
+        for word, i in word_index.items():
+            text_embedding[i] = nlp(word).vector
+        np.save(text_embedding_cache, text_embedding)
+    rnnModel.build_myModel(text_embedding)
+    rnnModel.model.compile(optimizer='adam',
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+    rnnModel.model.fit(pad_sequences(tokenizer.texts_to_sequences(X_train), maxlen=MAX_SEQUENCE_LENGTH),
+              Y_train,
+              batch_size=512, epochs=5,
+              validation_data=(pad_sequences(tokenizer.texts_to_sequences(X_test), maxlen=MAX_SEQUENCE_LENGTH)
+                               , Y_test), shuffle=True)
 
     result = rnnModel.model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences([
-                                                                               " What happened 2 ur vegan food options?! At least say on ur site so i know I won't be able 2 eat anything for next 6 hrs #fail",
-                                                                                     " I sleep hungry and It gets harder everyday",
-                                                                                     "everything is great, i have lost some weight",
-                                                                                     "awesome, really cool",
-                                                                                     "should I play cards",
-                                                                                     "I am full and inshape",
-                                                                                     "is it okay to be that hungry at night?"])
-                                                 ,maxlen=MAX_SEQUENCE_LENGTH))
-    print("result: ",result,"\n")
+        " What happened 2 ur vegan food options?! At least say on ur site so i know I won't be able 2 eat anything for next 6 hrs #fail",
+        " I sleep hungry and It gets harder everyday",
+        "everything is great, i have lost some weight",
+        "awesome, really cool",
+        "should I play cards",
+        "I am full and inshape",
+        "is it okay to be that hungry at night?"])
+        , maxlen=MAX_SEQUENCE_LENGTH))
+
+    print("result: ", np.argmax(result, axis=-1), "\n")
+def vader_model():
+    print_sentiment_scores([
+        " What happened 2 ur vegan food options?! At least say on ur site so i know I won't be able 2 eat anything for next 6 hrs #fail",
+        " I sleep hungry and It gets harder everyday",
+        "everything is great, i have lost some weight",
+        "awesome, really cool",
+        "should I play cards",
+        "I am full and inshape",
+        "is it okay to be that hungry at night?"])
+if __name__ == "__main__":
+    my_model()
+    # vader_model()
+

@@ -1,4 +1,6 @@
 from csv_reader import CSVReader
+import numpy as np
+from text_preprocessing import TextPreprocessing
 class VentApi:
     EMOTION_GOOD_ID =['96ccdd2e-152e-4e0d-a6da-c49d1c68b10c','0893f043-1382-4d65-9378-2fb89ada1091'
                              'e0babb52-73cd-4e31-b83c-357983cc7b46','d84f9579-ba96-4818-93a5-7ff12f504098'
@@ -17,7 +19,13 @@ class VentApi:
         #self.emotion_data = CSVReader.dataframe_from_file("VentDataset/emotions.csv", ['id', 'emotion_category_id'])
        # self.emotion_data = self.emotion_data[self.emotion_data.enabled == 'TRUE']
         self.vent_data = CSVReader.dataframe_from_file("VentDataset/vents.csv",['emotion_id','text'])
+        self.textPreProcessing = TextPreprocessing()
 
     def getVents(self,array):
         vent_data =  self.vent_data[self.vent_data.emotion_id.isin(array)]
-        return vent_data.text
+        texts = np.array(vent_data.text)
+        for i in range(len(texts)):
+          texts[i] = self.textPreProcessing.remove_special_characters(texts[i], True)
+          texts[i] = self.textPreProcessing.remove_accented_chars(texts[i])
+          texts[i] = self.textPreProcessing.remove_whiteList(texts[i])
+        return texts
