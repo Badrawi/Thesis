@@ -12,7 +12,7 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
 from vent_api import VentApi
-from rnn import RNN
+from models import Models
 import traceback
 from typing import Optional
 import multiprocessing
@@ -37,7 +37,7 @@ parser = English()
 nlp = spacy.load('en_core_web_lg')
 textPreProcessing  = TextPreprocessing()
 MAX_SEQUENCE_LENGTH = 150
-rnnModel = RNN()
+models = Models()
 tokenizer = Tokenizer(num_words=100000)
 analyser = SentimentIntensityAnalyzer()
 # Creating our tokenizer function
@@ -166,17 +166,17 @@ def my_model():
     #     for word, i in word_index.items():
     #         text_embedding[i] = nlp(word).vector
     #     np.save(text_embedding_cache, text_embedding)
-    rnnModel.build_myModel(text_embedding)
-    rnnModel.model.compile(optimizer='adam',
+    models.build_myModel(text_embedding)
+    models.model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
-    rnnModel.model.fit(pad_sequences(tokenizer.texts_to_sequences(X_train), maxlen=MAX_SEQUENCE_LENGTH),
+    models.model.fit(pad_sequences(tokenizer.texts_to_sequences(X_train), maxlen=MAX_SEQUENCE_LENGTH),
               Y_train,
               batch_size=512, epochs=5,
               validation_data=(pad_sequences(tokenizer.texts_to_sequences(X_test), maxlen=MAX_SEQUENCE_LENGTH)
                                , Y_test), shuffle=True)
 
-    result = rnnModel.model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences([
+    result = models.model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences([
         " What happened 2 ur vegan food options?! At least say on ur site so i know I won't be able 2 eat anything for next 6 hrs #fail",
         " I sleep hungry and It gets harder everyday",
         "everything is great, i have lost some weight",

@@ -5,7 +5,7 @@ from keras import backend as K
 from attention_layer import AttentionDecoder
 from bert_keras import BertLayer
 # from tensorflow.nn import space_to_depth
-class RNN:
+class Models:
 
     embedding_dim = 500
     input_length = 100
