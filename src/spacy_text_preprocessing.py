@@ -20,6 +20,7 @@ from keras.models import load_model
 import os
 from logger_methods import setup_logger
 import json
+import tensorflow as tf
 from keras import backend as K
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from bert_keras import create_tokenizer_from_hub_module, convert_text_to_examples, convert_examples_to_features
@@ -170,12 +171,14 @@ def my_model():
     models.model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
-    models.model.fit(pad_sequences(tokenizer.texts_to_sequences(X_train), maxlen=MAX_SEQUENCE_LENGTH),
+    fit_history = models.model.fit(pad_sequences(tokenizer.texts_to_sequences(X_train), maxlen=MAX_SEQUENCE_LENGTH),
               Y_train,
               batch_size=512, epochs=5,
               validation_data=(pad_sequences(tokenizer.texts_to_sequences(X_test), maxlen=MAX_SEQUENCE_LENGTH)
                                , Y_test), shuffle=True)
-
+    loss_history = fit_history.history["loss"]
+    numpy_loss_history = np.array(loss_history)
+    np.savetxt("loss_history.txt", numpy_loss_history, delimiter=",")
     result = models.model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences([
         " What happened 2 ur vegan food options?! At least say on ur site so i know I won't be able 2 eat anything for next 6 hrs #fail",
         " I sleep hungry and It gets harder everyday",
@@ -185,7 +188,7 @@ def my_model():
         "I am full and inshape",
         "is it okay to be that hungry at night?"])
         , maxlen=MAX_SEQUENCE_LENGTH))
-
+    get_vents_logger.info("result: ", np.argmax(result, axis=-1), "\n")
     print("result: ", np.argmax(result, axis=-1), "\n")
 def vader_model():
     print_sentiment_scores([
@@ -197,6 +200,7 @@ def vader_model():
         "I am full and inshape",
         "is it okay to be that hungry at night?"])
 if __name__ == "__main__":
+    tf.compat.v1.disable_eager_execution()
     my_model()
     # vader_model()
 

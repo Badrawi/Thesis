@@ -8,6 +8,8 @@ from bert.tokenization import FullTokenizer
 from tqdm import tqdm
 from keras import backend as K
 import keras
+# Initialize session
+sess = tf.Session()
 
 class PaddingInputExample(object):
     """Fake example so the num input examples is a multiple of the batch size.
@@ -233,4 +235,11 @@ def build_model(max_seq_length):
     model.summary()
 
     return model
+
+
+def initialize_vars(sess):
+    sess.run(tf.local_variables_initializer())
+    sess.run(tf.global_variables_initializer())
+    sess.run(tf.tables_initializer())
+    K.set_session(sess)
 
