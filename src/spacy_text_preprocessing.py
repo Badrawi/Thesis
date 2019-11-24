@@ -151,7 +151,8 @@ def my_model():
     sequences, word_index = get_word_index(texts)
     categorical_sentiments = to_categorical(sentiments, num_classes=5)
     X_train, X_test, Y_train, Y_test = train_test_split(texts, categorical_sentiments, test_size=0.2)
-    tokenizer = hub.create_tokenizer_from_hub_module()
+    bert_path = "https://tfhub.dev/google/bert_uncased_L-12_H-768_A-12/1"
+    tokenizer = create_tokenizer_from_hub_module(bert_path)
     train_examples = convert_text_to_examples(X_train, Y_train)
     test_examples = convert_text_to_examples(X_test, Y_test)
     (train_input_ids, train_input_masks, train_segment_ids, train_labels
