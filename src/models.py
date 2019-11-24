@@ -4,6 +4,7 @@ from keras.layers import Input,Bidirectional,GlobalAveragePooling1D,GlobalMaxPoo
 from keras import backend as K
 from attention_layer import AttentionDecoder
 from bert_keras import BertLayer
+import tensorflow_hub as hub
 # from tensorflow.nn import space_to_depth
 class Models:
 
@@ -62,8 +63,10 @@ class Models:
         self.bert_inputs = [in_id, in_mask, in_segment]
 
         # Instantiate the custom Bert Layer defined above
-        bert_output = BertLayer(n_fine_tune_layers=10)(self.bert_inputs)
-        base = SpatialDropout1D(self.spatial_dropout)(bert_output)
+        bertlayer = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/1",
+                            trainable=True)
+        pooled_output, sequence_output  = bertlayer(self.bert_inputs)
+        base = SpatialDropout1D(self.spatial_dropout)(sequence_output)
         return base
     def build_GRU_model(self,base):
         base = GRU(128, return_sequences=True)(base)

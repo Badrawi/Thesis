@@ -9,7 +9,7 @@ from tqdm import tqdm
 from keras import backend as K
 import keras
 # Initialize session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 class PaddingInputExample(object):
     """Fake example so the num input examples is a multiple of the batch size.
