@@ -171,11 +171,13 @@ def my_model():
     models.model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
-    fit_history = models.model.fit(pad_sequences(tokenizer.texts_to_sequences(X_train), maxlen=MAX_SEQUENCE_LENGTH),
-              Y_train,
-              batch_size=512, epochs=5,
-              validation_data=(pad_sequences(tokenizer.texts_to_sequences(X_test), maxlen=MAX_SEQUENCE_LENGTH)
-                               , Y_test), shuffle=True)
+    fit_history = models.model.fit( [train_input_ids, train_input_masks, train_segment_ids],
+        train_labels,
+        validation_data=(
+            [test_input_ids, test_input_masks, test_segment_ids],
+            test_labels,
+        ),
+              batch_size=512, epochs=5, shuffle=True)
     loss_history = fit_history.history["loss"]
     numpy_loss_history = np.array(loss_history)
     np.savetxt("loss_history.txt", numpy_loss_history, delimiter=",")
