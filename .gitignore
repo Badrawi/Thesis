@@ -3,3 +3,5 @@
 data
 *.pdf
 *.txt
+*.log
+*.npy

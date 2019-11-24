@@ -22,6 +22,7 @@ from logger_methods import setup_logger
 import json
 from keras import backend as K
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from bert_keras import create_tokenizer_from_hub_module, convert_text_to_examples, convert_examples_to_features
 get_vents_logger = setup_logger('get_vents', 'extract_progress.log')
 # Create our list of punctuation marks
 punctuations = string.punctuation
@@ -150,13 +151,20 @@ def my_model():
     sequences, word_index = get_word_index(texts)
     categorical_sentiments = to_categorical(sentiments, num_classes=5)
     X_train, X_test, Y_train, Y_test = train_test_split(texts, categorical_sentiments, test_size=0.2)
-    if os.path.isfile(text_embedding_cache):
-        text_embedding = np.load(text_embedding_cache, allow_pickle=True)
-    else:
-        text_embedding = np.zeros((len(word_index) + 1, 300))
-        for word, i in word_index.items():
-            text_embedding[i] = nlp(word).vector
-        np.save(text_embedding_cache, text_embedding)
+    tokenizer = hub.create_tokenizer_from_hub_module()
+    train_examples = convert_text_to_examples(X_train, Y_train)
+    test_examples = convert_text_to_examples(X_test, Y_test)
+    (train_input_ids, train_input_masks, train_segment_ids, train_labels
+     ) = convert_examples_to_features(tokenizer, train_examples, max_seq_length=150)
+    (test_input_ids, test_input_masks, test_segment_ids, test_labels
+     ) = convert_examples_to_features(tokenizer, test_examples, max_seq_length=150)
+    # if os.path.isfile(text_embedding_cache):
+    #     text_embedding = np.load(text_embedding_cache, allow_pickle=True)
+    # else:
+    #     text_embedding = np.zeros((len(word_index) + 1, 300))
+    #     for word, i in word_index.items():
+    #         text_embedding[i] = nlp(word).vector
+    #     np.save(text_embedding_cache, text_embedding)
     rnnModel.build_myModel(text_embedding)
     rnnModel.model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
