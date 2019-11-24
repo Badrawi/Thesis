@@ -102,7 +102,11 @@ class Models:
         return concatenate([avg,max])
 
     def build_myModel(self,embedding_matrix,bert=True):
-        base = self.build_Base_model(embedding_matrix)
+        base = None
+        if(bert):
+            base = self.build_Base_Bert_model()
+        else:
+            base = self.build_Base_model(embedding_matrix)
         concat_cnn = self.build_CNN_model(base)
         concat_blstm = self.build_BLTSM_model(base)
         concat_gru = self.build_GRU_model(base)
