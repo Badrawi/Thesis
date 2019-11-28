@@ -167,7 +167,7 @@ def my_model():
     #     for word, i in word_index.items():
     #         text_embedding[i] = nlp(word).vector
     #     np.save(text_embedding_cache, text_embedding)
-    models.build_Base_Bert_model()
+    models.build_myModel(text_embedding)
     models.model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
