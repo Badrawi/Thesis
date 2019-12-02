@@ -53,6 +53,8 @@ class Models:
             input_length=self.max_sequence_length,
             trainable=False,
         )(self.sequence_input)
+        print("****shape*****")
+        print(embedding.shape)
         base = SpatialDropout1D(self.spatial_dropout)(embedding)
         return base
     def build_Base_Bert_model(self):
@@ -65,7 +67,7 @@ class Models:
         # bertlayer = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/1",
         #                     trainable=True)
         bert_output = BertLayer(n_fine_tune_layers=10)(self.bert_inputs)
-        base = Dropout(self.spatial_dropout)(bert_output)
+        base = SpatialDropout1D(self.spatial_dropout)(bert_output)
         return base
     def build_GRU_model(self,base):
         base = GRU(128, return_sequences=True)(base)
