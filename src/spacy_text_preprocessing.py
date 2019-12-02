@@ -202,7 +202,10 @@ def vader_model():
         "I am full and inshape",
         "is it okay to be that hungry at night?"])
 if __name__ == "__main__":
-    tf.compat.v1.disable_eager_execution()
-    my_model()
-    # vader_model()
+    try:
+        tf.compat.v1.disable_eager_execution()
+        my_model()
+        # vader_model()
+    except Exception as e:
+        get_vents_logger.error(" Unexpected error: " + str(e) + traceback.format_exc())
 
