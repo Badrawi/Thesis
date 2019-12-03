@@ -67,6 +67,8 @@ class Models:
         # bertlayer = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/1",
         #                     trainable=True)
         bert_output = BertLayer(n_fine_tune_layers=10)(self.bert_inputs)
+        print("********print bert******")
+        print(bert_output)
         base = Dense(300, activation='relu')(bert_output)
         return base
     def build_GRU_model(self,base):
