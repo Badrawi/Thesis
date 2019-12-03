@@ -67,7 +67,7 @@ class Models:
         # bertlayer = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/1",
         #                     trainable=True)
         bert_output = BertLayer(n_fine_tune_layers=10)(self.bert_inputs)
-        base = SpatialDropout1D(self.spatial_dropout)(bert_output)
+        base = Dense(300, activation='relu')(bert_output)
         return base
     def build_GRU_model(self,base):
         base = GRU(128, return_sequences=True)(base)
@@ -77,11 +77,11 @@ class Models:
         return concatenate([avg, max])
     def build_BLTSM_model(self,base):
         base = Bidirectional(
-                LSTM(self.lstm_units,input_shape=(5, 50), return_sequences=True,
+                LSTM(self.lstm_units, return_sequences=True,
                      dropout=self.lstm_dropout, recurrent_dropout=self.recurrent_dropout),
 
             )(base)
-        base = AttentionDecoder(150, 50)(base)
+        #base = AttentionDecoder(150, 50)(base)
         base = Bidirectional(
             LSTM(self.lstm_units, return_sequences=True,
                  dropout=self.lstm_dropout, recurrent_dropout=self.recurrent_dropout)
