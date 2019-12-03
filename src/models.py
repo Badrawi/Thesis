@@ -4,6 +4,7 @@ from keras.layers import Input,Bidirectional,GlobalAveragePooling1D,GlobalMaxPoo
 from keras import backend as K
 from attention_layer import AttentionDecoder
 from bert_keras import BertLayer
+import tensorflow as tf
 # from tensorflow.nn import space_to_depth
 class Models:
 
