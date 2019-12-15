@@ -5,6 +5,7 @@ from keras import backend as K
 from attention_layer import AttentionDecoder
 from bert_keras import BertLayer
 import tensorflow as tf
+import tensorflow_hub as hub
 # from tensorflow.nn import space_to_depth
 class Models:
 
@@ -59,18 +60,29 @@ class Models:
         base = SpatialDropout2D(self.spatial_dropout)(embedding)
         return base
     def build_Base_Bert_model(self):
+        tags = set()
+        tags.add("train")
         in_id = Input(shape=(self.max_sequence_length,), name="input_ids")
         in_mask = Input(shape=(self.max_sequence_length,), name="input_masks")
         in_segment = Input(shape=(self.max_sequence_length,), name="segment_ids")
-        self.bert_inputs = [in_id, in_mask, in_segment]
-
+        #self.bert_inputs = [in_id, in_mask, in_segment]
+        bert_module = hub.Module(bert_hub_module_handle, tags=tags, trainable=True)
+        self.bert_inputs = dict(
+        input_ids=in_id,
+        input_mask=in_mask,
+        segment_ids=in_segment)
+        bert_outputs = bert_module(
+        inputs=bert_inputs,
+        signature="tokens",
+        as_dict=True)
+        output_layer = bert_outputs["sequence_output"]
         # Instantiate the custom Bert Layer defined above
         # bertlayer = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/1",
         #                     trainable=True)
-        bert_output = BertLayer(n_fine_tune_layers=10,)(self.bert_inputs)
-        print("********print bert******")
-        print(bert_output)
-        base = SpatialDropout2D(self.spatial_dropout)(bert_output)
+       # bert_output = BertLayer(n_fine_tune_layers=10,)(self.bert_inputs)
+        #print("********print bert******")
+        #print(bert_output)
+        base = SpatialDropout2D(self.spatial_dropout)(output_layer)
         return base
     def build_GRU_model(self,base):
         base = GRU(128, return_sequences=True)(base)
