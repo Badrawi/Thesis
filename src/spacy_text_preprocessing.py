@@ -154,12 +154,30 @@ def my_model():
     X_train, X_test, Y_train, Y_test = train_test_split(texts, categorical_sentiments, test_size=0.2)
     bert_path = "https://tfhub.dev/google/bert_cased_L-12_H-768_A-12/1"
     tokenizer = create_tokenizer_from_hub_module(bert_path)
-    train_examples = convert_text_to_examples(X_train, Y_train)
-    test_examples = convert_text_to_examples(X_test, Y_test)
-    (train_input_ids, train_input_masks, train_segment_ids, train_labels
-     ) = convert_examples_to_features(tokenizer, train_examples, max_seq_length=150)
-    (test_input_ids, test_input_masks, test_segment_ids, test_labels
-     ) = convert_examples_to_features(tokenizer, test_examples, max_seq_length=150)
+    train_input_ids, train_input_masks, train_segment_ids, train_labels = [],[],[],[]
+    test_input_ids, test_input_masks, test_segment_ids, test_labels = [],[],[],[]
+    if os.path.isfile('train.npz') and os.path.isfile('test.npz'):
+        train = np.load('train.npz', allow_pickle=True)
+        texts = np.load('test.npz', allow_pickle=True)
+        test_input_ids = test["test_input_ids"]
+        test_input_masks = test["test_input_masks"]
+        test_segment_ids = test["test_segment_ids"]
+        test_labels = test["test_labels"]
+        train_input_ids = train["train_input_ids"]
+        train_input_masks = train["train_input_masks"]
+        train_segment_ids = train["train_segment_ids"]
+        train_labels = train["train_labels"]
+    else:
+        train_examples = convert_text_to_examples(X_train, Y_train)
+        test_examples = convert_text_to_examples(X_test, Y_test)
+        (train_input_ids, train_input_masks, train_segment_ids, train_labels
+        ) = convert_examples_to_features(tokenizer, train_examples, max_seq_length=150)
+        (test_input_ids, test_input_masks, test_segment_ids, test_labels
+        ) = convert_examples_to_features(tokenizer, test_examples, max_seq_length=150)
+        np.savez('train.npz', train_input_ids=train_input_ids, train_input_masks=train_input_masks, 
+        train_segment_ids=train_segment_ids, train_labels=train_labels)
+        np.savez('test.npz',test_input_ids=test_input_ids, test_input_masks=test_input_masks, 
+        test_segment_ids=test_segment_ids, test_labels=test_labels)
     # if os.path.isfile(text_embedding_cache):
     #     text_embedding = np.load(text_embedding_cache, allow_pickle=True)
     # else:
