@@ -1,6 +1,6 @@
 from keras.models import Sequential,Model
-from keras.layers import Dense, LSTM, Embedding,Dropout,SpatialDropout2D,Conv2D,MaxPooling2D,GRU
-from keras.layers import Input,Bidirectional,GlobalAveragePooling2D,GlobalMaxPooling2D,concatenate
+from keras.layers import Dense, LSTM, Embedding,Dropout,SpatialDropout1D,Conv1D,MaxPooling1D,GRU
+from keras.layers import Input,Bidirectional,GlobalAveragePooling1D,GlobalMaxPooling1D,concatenate
 from keras import backend as K
 from attention_layer import AttentionDecoder
 from bert_keras import BertLayer
@@ -30,8 +30,8 @@ class Models:
                       input_length=150,
                       trainable=False))
         #self.model.add(SpatialDropout1D(0.2))
-        self.model.add(MaxPooling2D(pool_size=2))
-        self.model.add(Conv2D(filters=32, kernel_size=3, padding='same', activation='relu'))
+        self.model.add(MaxPooling1D(pool_size=2))
+        self.model.add(Conv1D(filters=32, kernel_size=3, padding='same', activation='relu'))
         self.model.add(LSTM(128,return_sequences=True))
         self.model.add(LSTM(128, return_sequences=True))
         # self.model.add(SpatialDropout1D(0.2))
@@ -57,7 +57,7 @@ class Models:
         )(self.sequence_input)
         print("****shape*****")
         print(embedding.shape)
-        base = SpatialDropout2D(self.spatial_dropout)(embedding)
+        base = SpatialDropout1D(self.spatial_dropout)(embedding)
         return base
     def build_Base_Bert_model(self):
         tags = set()
@@ -73,13 +73,13 @@ class Models:
         bert_output = BertLayer()(self.bert_inputs)
         #print("********print bert******")
         #print(bert_output)
-        base = SpatialDropout2D(self.spatial_dropout)(bert_output)
+        base = SpatialDropout1D(self.spatial_dropout)(bert_output)
         return base
     def build_GRU_model(self,base):
         base = GRU(128, return_sequences=True)(base)
         base = GRU(128, return_sequences=True)(base)
-        avg = GlobalAveragePooling2D()(base)
-        max = GlobalMaxPooling2D()(base)
+        avg = GlobalAveragePooling1D()(base)
+        max = GlobalMaxPooling1D()(base)
         return concatenate([avg, max])
     def build_BLTSM_model(self,base):
         base = Bidirectional(
@@ -93,20 +93,20 @@ class Models:
                  dropout=self.lstm_dropout, recurrent_dropout=self.recurrent_dropout)
 
         )(base)
-        avg = GlobalAveragePooling2D()(base)
-        max = GlobalMaxPooling2D()(base)
+        avg = GlobalAveragePooling1D()(base)
+        max = GlobalMaxPooling1D()(base)
         return concatenate([avg, max])
 
 
     def build_CNN_model(self,base):
-        base = MaxPooling2D(pool_size=2)(base)
-        base = Conv2D(self.filters, kernel_size=self.kernel_size, padding='valid',
+        base = MaxPooling1D(pool_size=2)(base)
+        base = Conv1D(self.filters, kernel_size=self.kernel_size, padding='valid',
                       kernel_initializer='glorot_uniform')(base)
-        base = MaxPooling2D(pool_size=2)(base)
-        base = Conv2D(self.filters, kernel_size=self.kernel_size, padding='valid',
+        base = MaxPooling1D(pool_size=2)(base)
+        base = Conv1D(self.filters, kernel_size=self.kernel_size, padding='valid',
                       kernel_initializer='glorot_uniform')(base)
-        avg = GlobalAveragePooling2D()(base)
-        max = GlobalMaxPooling2D()(base)
+        avg = GlobalAveragePooling1D()(base)
+        max = GlobalMaxPooling1D()(base)
         return concatenate([avg,max])
 
     def build_myModel(self,embedding_matrix,bert=True):
