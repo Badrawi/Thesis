@@ -204,7 +204,7 @@ class BertLayer(keras.layers.Layer):
             result = self.bert(inputs=bert_inputs, signature="tokens", as_dict=True)[
                 "sequence_output"
             ]
-
+            print("result ",result.shape)
             mul_mask = lambda x, m: x * tf.expand_dims(m, axis=-1)
             masked_reduce_mean = lambda x, m: tf.reduce_sum(mul_mask(x, m), axis=1) / (
                     tf.reduce_sum(m, axis=1, keepdims=True) + 1e-10)

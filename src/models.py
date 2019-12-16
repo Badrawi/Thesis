@@ -65,24 +65,15 @@ class Models:
         in_id = Input(shape=(self.max_sequence_length,), name="input_ids")
         in_mask = Input(shape=(self.max_sequence_length,), name="input_masks")
         in_segment = Input(shape=(self.max_sequence_length,), name="segment_ids")
-        #self.bert_inputs = [in_id, in_mask, in_segment]
-        bert_module = hub.Module("https://tfhub.dev/google/bert_cased_L-12_H-768_A-12/1", tags=tags, trainable=True)
-        self.bert_inputs = dict(
-        input_ids=in_id,
-        input_mask=in_mask,
-        segment_ids=in_segment)
-        bert_outputs = bert_module(
-        inputs=self.bert_inputs,
-        signature="tokens",
-        as_dict=True)
-        output_layer = bert_outputs["sequence_output"]
+        self.bert_inputs = [in_id, in_mask, in_segment]
+    
         # Instantiate the custom Bert Layer defined above
         # bertlayer = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/1",
         #                     trainable=True)
-       # bert_output = BertLayer(n_fine_tune_layers=10,)(self.bert_inputs)
+        bert_output = BertLayer()(self.bert_inputs)
         #print("********print bert******")
         #print(bert_output)
-        base = SpatialDropout2D(self.spatial_dropout)(output_layer)
+        base = SpatialDropout2D(self.spatial_dropout)(bert_output)
         return base
     def build_GRU_model(self,base):
         base = GRU(128, return_sequences=True)(base)
