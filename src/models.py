@@ -72,7 +72,7 @@ class Models:
         input_mask=in_mask,
         segment_ids=in_segment)
         bert_outputs = bert_module(
-        inputs=bert_inputs,
+        inputs=self.bert_inputs,
         signature="tokens",
         as_dict=True)
         output_layer = bert_outputs["sequence_output"]
