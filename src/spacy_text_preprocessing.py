@@ -158,7 +158,7 @@ def my_model():
     test_input_ids, test_input_masks, test_segment_ids, test_labels = [],[],[],[]
     if os.path.isfile('train.npz') and os.path.isfile('test.npz'):
         train = np.load('train.npz', allow_pickle=True)
-        texts = np.load('test.npz', allow_pickle=True)
+        test = np.load('test.npz', allow_pickle=True)
         test_input_ids = test["test_input_ids"]
         test_input_masks = test["test_input_masks"]
         test_segment_ids = test["test_segment_ids"]
