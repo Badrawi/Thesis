@@ -66,7 +66,7 @@ class Models:
         in_mask = Input(shape=(self.max_sequence_length,), name="input_masks")
         in_segment = Input(shape=(self.max_sequence_length,), name="segment_ids")
         #self.bert_inputs = [in_id, in_mask, in_segment]
-        bert_module = hub.Module("BERT_MODEL_HUB", tags=tags, trainable=True)
+        bert_module = hub.Module("https://tfhub.dev/google/bert_cased_L-12_H-768_A-12/1", tags=tags, trainable=True)
         self.bert_inputs = dict(
         input_ids=in_id,
         input_mask=in_mask,
