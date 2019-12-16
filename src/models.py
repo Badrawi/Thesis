@@ -71,7 +71,7 @@ class Models:
         bert_output = BertLayer()(self.bert_inputs)
         print("********print bert******")
         print(bert_output.shape)
-        base = SpatialDropout1D(self.spatial_dropout)(bert_output)
+       # base = SpatialDropout1D(self.spatial_dropout)(bert_output)
         return base
     def build_GRU_model(self,base):
         base = GRU(128, return_sequences=True)(base)
