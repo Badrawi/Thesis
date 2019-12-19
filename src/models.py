@@ -101,7 +101,7 @@ class Models:
                       kernel_initializer='glorot_uniform')(base)
       #  base = MaxPooling1D(pool_size=2)(base)
       #  base = Conv1D(self.filters, kernel_size=self.kernel_size, padding='valid',
-                      kernel_initializer='glorot_uniform')(base)
+        #              kernel_initializer='glorot_uniform')(base)
         avg = GlobalAveragePooling1D()(base)
         max = GlobalMaxPooling1D()(base)
         return concatenate([avg,max])
