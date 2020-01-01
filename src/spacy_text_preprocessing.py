@@ -101,6 +101,7 @@ def my_model():
         texts = []
         sentiments = []
         df = CSVReader.dataframe_from_file()
+        print("*****",df.head())
         good = df.loc[df['Quality'] == 1]
         good = good[[3]]
         bad = df.loc[df['Quality'] == 0]
