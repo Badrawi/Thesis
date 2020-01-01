@@ -103,9 +103,9 @@ def my_model():
         df = CSVReader.dataframe_from_file()
         print("*****",df.columns[0])
         good = df.loc[df['Quality'] == 1]
-        good = good[[3]]
+        good = good[df.columns[3]]
         bad = df.loc[df['Quality'] == 0]
-        bad = bad[[3]]
+        bad = bad[df.columns[3]]
         # for i in range(len(sentiments)):
         #     texts[i] = textPreProcessing.remove_special_characters(texts[i], True)
         #     texts[i] = textPreProcessing.remove_accented_chars(texts[i])
@@ -156,7 +156,7 @@ def my_model():
         np.save(sentiment_cahce, sentiments)
     text_embedding = []
     sequences, word_index = get_word_index(texts)
-    categorical_sentiments = to_categorical(sentiments, num_classes=5)
+    categorical_sentiments = to_categorical(sentiments, num_classes=2)
     X_train, X_test, Y_train, Y_test = train_test_split(texts, categorical_sentiments, test_size=0.2)
     bert_path = "https://tfhub.dev/google/bert_cased_L-12_H-768_A-12/1"
     tokenizer = create_tokenizer_from_hub_module(bert_path)
