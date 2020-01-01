@@ -101,9 +101,9 @@ def my_model():
         texts = []
         sentiments = []
         df = CSVReader.dataframe_from_file()
-        good = df.loc[df[[0]] > 0]
+        good = df[df[[0]] > 0]
         good = good[[3]]
-        bad = df.loc[df[[0]] == 0]
+        bad = df[df[[0]] == 0]
         bad = bad[[3]]
         # for i in range(len(sentiments)):
         #     texts[i] = textPreProcessing.remove_special_characters(texts[i], True)
