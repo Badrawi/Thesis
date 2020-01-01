@@ -6,7 +6,7 @@ class CSVReader:
     @staticmethod
     def dataframe_from_file():
         fpath = "glue_data/MRPC/train.tsv"
-        data = pd.read_csv(fpath,sep='/t')
+        data = pd.read_csv(fpath,sep='\t')
         data =data.dropna()
         return data
 
