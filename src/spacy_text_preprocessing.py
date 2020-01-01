@@ -100,6 +100,11 @@ def my_model():
         # sentiments = np.array(airline_data.airline_sentiment)
         texts = []
         sentiments = []
+        df = CSVReader.dataframe_from_file()
+        good = df[df.Quality > 0]
+        good = good[[3]]
+        bad = df[df.Quality == 0]
+        bad = bad[[3]]
         # for i in range(len(sentiments)):
         #     texts[i] = textPreProcessing.remove_special_characters(texts[i], True)
         #     texts[i] = textPreProcessing.remove_accented_chars(texts[i])
@@ -113,26 +118,26 @@ def my_model():
         # with multiprocessing.Pool() as pool:
         #     positive = pool.starmap(getVentsSentiment, zip(vent_positive))
         #     negative = pool.starmap(getVentsSentiment, zip(vent_negative))
-        good = ventApi.getVents(ventApi.EMOTION_GOOD_ID)
-        energized = ventApi.getVents(ventApi.EMOTION_ENERGIZED_ID)
-        bad = ventApi.getVents(ventApi.EMOTION_BAD_ID)
-        struggle = ventApi.getVents(ventApi.EMOTION_STRUGGLE_ID)
-        neutral = ventApi.getVents(ventApi.EMOTION_NEUTRAL_ID)
+        # good = ventApi.getVents(ventApi.EMOTION_GOOD_ID)
+        # energized = ventApi.getVents(ventApi.EMOTION_ENERGIZED_ID)
+        # bad = ventApi.getVents(ventApi.EMOTION_BAD_ID)
+        # struggle = ventApi.getVents(ventApi.EMOTION_STRUGGLE_ID)
+        # neutral = ventApi.getVents(ventApi.EMOTION_NEUTRAL_ID)
         texts = np.append(texts, good)
         good_sentiments = [1] * len(good)
         sentiments = np.append(sentiments, good_sentiments)
-        energized_sentiments = [2] * len(energized)
-        texts = np.append(texts, energized)
-        sentiments = np.append(sentiments, energized_sentiments)
+        # energized_sentiments = [2] * len(energized)
+        # texts = np.append(texts, energized)
+        # sentiments = np.append(sentiments, energized_sentiments)
         texts = np.append(texts, bad)
         bad_sentiments = [-1] * len(bad)
         sentiments = np.append(sentiments, bad_sentiments)
-        texts = np.append(texts, struggle)
-        struggle_sentiments = [-2] * len(struggle)
-        sentiments = np.append(sentiments, struggle_sentiments)
-        texts = np.append(texts, neutral)
-        neutral_sentiments = [0] * len(neutral)
-        sentiments = np.append(sentiments, neutral_sentiments)
+        # texts = np.append(texts, struggle)
+        # struggle_sentiments = [-2] * len(struggle)
+        # sentiments = np.append(sentiments, struggle_sentiments)
+        # texts = np.append(texts, neutral)
+        # neutral_sentiments = [0] * len(neutral)
+        # sentiments = np.append(sentiments, neutral_sentiments)
         # for text in stress_data:
         #     text = textPreProcessing.remove_special_characters(text, True)
         #     text = textPreProcessing.remove_accented_chars(text)
