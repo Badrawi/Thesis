@@ -57,12 +57,12 @@ class Models:
         )(self.sequence_input)
         base = SpatialDropout1D(self.spatial_dropout)(embedding)
         return base
-    def build_Base_Bert_model(self):
+    def build_Base_Bert_model(self,input_id,input_mask,input_segment):
         tags = set()
         tags.add("train")
-        in_id = Input(shape=(self.max_sequence_length,self.max_sequence_length,), name="input_ids")
-        in_mask = Input(shape=(self.max_sequence_length,self.max_sequence_length,), name="input_masks")
-        in_segment = Input(shape=(self.max_sequence_length,self.max_sequence_length,), name="segment_ids")
+        in_id = Input(shape=input_id.shape, name="input_ids")
+        in_mask = Input(shape=input_mask.shape, name="input_masks")
+        in_segment = Input(shape=input_segment.shape, name="segment_ids")
         self.bert_inputs = [in_id, in_mask, in_segment]
     
         # Instantiate the custom Bert Layer defined above
@@ -106,12 +106,13 @@ class Models:
         max = GlobalMaxPooling1D()(base)
         return concatenate([avg,max])
 
-    def build_myModel(self,embedding_matrix,bert=True):
+    def build_myModel(self,input_id,input_mask=None,input_segment=None,bert=True):
         base = None
         if(bert):
-            base = self.build_Base_Bert_model()
+            base = self.build_Base_Bert_model(input_id,input_mask,input_segment)
         else:
-            base = self.build_Base_model(embedding_matrix)
+            base = self.build_Base_model(input_id)
+        print("base****** ",base)
         concat_cnn = self.build_CNN_model(base)
         concat_blstm = self.build_BLTSM_model(base)
         concat_gru = self.build_GRU_model(base)
