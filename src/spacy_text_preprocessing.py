@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
-# from vent_api import VentApi
+from vent_api import VentApi
 from models import Models
 import traceback
 from typing import Optional
@@ -27,7 +27,7 @@ from bert_keras import create_tokenizer_from_hub_module, convert_text_to_example
 get_vents_logger = setup_logger('get_vents', 'extract_progress.log')
 # Create our list of punctuation marks
 punctuations = string.punctuation
-# ventApi = VentApi()
+ventApi = VentApi()
 # Create our list of stopwords
 stop_words = spacy.lang.en.stop_words.STOP_WORDS
 sentiment_labels = []
@@ -53,21 +53,21 @@ def print_sentiment_scores(sentences):
     for sentence in sentences:
         snt = analyser.polarity_scores(sentence)
         print("{:-<40} {}".format(sentence, str(snt)))
-# def getVentsSentiment(vents):
-#     count = 0
-#     texts =[]
-#     for text in vents:
-#         try:
-#             if count % 1000 == 0:
-#                 get_vents_logger.info("[COUNT: " + str(count) + "]")
-#             text = textPreProcessing.remove_special_characters(text, True)
-#             text = textPreProcessing.remove_accented_chars(text)
-#             text = textPreProcessing.remove_whiteList(text)
-#             texts = np.append(texts, [text])
-#         except Exception as e:
-#             get_vents_logger.error("for text: ",text," Unexpected error: " + str(e) + traceback.format_exc())
-#         count += 1
-#     return texts
+def getVentsSentiment(vents):
+    count = 0
+    texts =[]
+    for text in vents:
+        try:
+            if count % 1000 == 0:
+                get_vents_logger.info("[COUNT: " + str(count) + "]")
+            text = textPreProcessing.remove_special_characters(text, True)
+            text = textPreProcessing.remove_accented_chars(text)
+            text = textPreProcessing.remove_whiteList(text)
+            texts = np.append(texts, [text])
+        except Exception as e:
+            get_vents_logger.error("for text: ",text," Unexpected error: " + str(e) + traceback.format_exc())
+        count += 1
+    return texts
 def get_embeddings(sentence):
     # Creating our token object, which is used to create documents with linguistic annotations.
     mytokens = parser(sentence)
@@ -100,12 +100,12 @@ def my_model():
         # sentiments = np.array(airline_data.airline_sentiment)
         texts = []
         sentiments = []
-        df = CSVReader.dataframe_from_file()
-        print("*****",df.columns[0])
-        good = df.loc[df['Quality'] == 1]
-        good = good[df.columns[3]]
-        bad = df.loc[df['Quality'] == 0]
-        bad = bad[df.columns[3]]
+        # df = CSVReader.dataframe_from_file()
+        # print("*****",df.columns[0])
+        # good = df.loc[df['Quality'] == 1]
+        # good = good[df.columns[3]]
+        # bad = df.loc[df['Quality'] == 0]
+        # bad = bad[df.columns[3]]
         # for i in range(len(sentiments)):
         #     texts[i] = textPreProcessing.remove_special_characters(texts[i], True)
         #     texts[i] = textPreProcessing.remove_accented_chars(texts[i])
@@ -119,26 +119,26 @@ def my_model():
         # with multiprocessing.Pool() as pool:
         #     positive = pool.starmap(getVentsSentiment, zip(vent_positive))
         #     negative = pool.starmap(getVentsSentiment, zip(vent_negative))
-        # good = ventApi.getVents(ventApi.EMOTION_GOOD_ID)
-        # energized = ventApi.getVents(ventApi.EMOTION_ENERGIZED_ID)
-        # bad = ventApi.getVents(ventApi.EMOTION_BAD_ID)
-        # struggle = ventApi.getVents(ventApi.EMOTION_STRUGGLE_ID)
-        # neutral = ventApi.getVents(ventApi.EMOTION_NEUTRAL_ID)
+        good = ventApi.getVents(ventApi.EMOTION_GOOD_ID)
+        energized = ventApi.getVents(ventApi.EMOTION_ENERGIZED_ID)
+        bad = ventApi.getVents(ventApi.EMOTION_BAD_ID)
+        struggle = ventApi.getVents(ventApi.EMOTION_STRUGGLE_ID)
+        neutral = ventApi.getVents(ventApi.EMOTION_NEUTRAL_ID)
         texts = np.append(texts, good)
         good_sentiments = [1] * len(good)
         sentiments = np.append(sentiments, good_sentiments)
-        # energized_sentiments = [2] * len(energized)
-        # texts = np.append(texts, energized)
-        # sentiments = np.append(sentiments, energized_sentiments)
+        energized_sentiments = [2] * len(energized)
+        texts = np.append(texts, energized)
+        sentiments = np.append(sentiments, energized_sentiments)
         texts = np.append(texts, bad)
         bad_sentiments = [-1] * len(bad)
         sentiments = np.append(sentiments, bad_sentiments)
-        # texts = np.append(texts, struggle)
-        # struggle_sentiments = [-2] * len(struggle)
-        # sentiments = np.append(sentiments, struggle_sentiments)
-        # texts = np.append(texts, neutral)
-        # neutral_sentiments = [0] * len(neutral)
-        # sentiments = np.append(sentiments, neutral_sentiments)
+        texts = np.append(texts, struggle)
+        struggle_sentiments = [-2] * len(struggle)
+        sentiments = np.append(sentiments, struggle_sentiments)
+        texts = np.append(texts, neutral)
+        neutral_sentiments = [0] * len(neutral)
+        sentiments = np.append(sentiments, neutral_sentiments)
         # for text in stress_data:
         #     text = textPreProcessing.remove_special_characters(text, True)
         #     text = textPreProcessing.remove_accented_chars(text)
