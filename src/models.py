@@ -60,9 +60,9 @@ class Models:
     def build_Base_Bert_model(self):
         tags = set()
         tags.add("train")
-        in_id = Input(shape=(self.max_sequence_length,self.max_sequence_length,self.max_sequence_length), name="input_ids")
-        in_mask = Input(shape=(self.max_sequence_length,self.max_sequence_length,self.max_sequence_length), name="input_masks")
-        in_segment = Input(shape=(self.max_sequence_length,self.max_sequence_length,self.max_sequence_length), name="segment_ids")
+        in_id = Input(shape=(self.max_sequence_length,self.max_sequence_length,), name="input_ids")
+        in_mask = Input(shape=(self.max_sequence_length,self.max_sequence_length,), name="input_masks")
+        in_segment = Input(shape=(self.max_sequence_length,self.max_sequence_length,), name="segment_ids")
         self.bert_inputs = [in_id, in_mask, in_segment]
     
         # Instantiate the custom Bert Layer defined above
