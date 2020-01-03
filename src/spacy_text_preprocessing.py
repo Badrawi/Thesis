@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
-from vent_api import VentApi
+# from vent_api import VentApi
 from models import Models
 import traceback
 from typing import Optional
@@ -27,7 +27,7 @@ from bert_keras import create_tokenizer_from_hub_module, convert_text_to_example
 get_vents_logger = setup_logger('get_vents', 'extract_progress.log')
 # Create our list of punctuation marks
 punctuations = string.punctuation
-ventApi = VentApi()
+# ventApi = VentApi()
 # Create our list of stopwords
 stop_words = spacy.lang.en.stop_words.STOP_WORDS
 sentiment_labels = []
@@ -53,21 +53,21 @@ def print_sentiment_scores(sentences):
     for sentence in sentences:
         snt = analyser.polarity_scores(sentence)
         print("{:-<40} {}".format(sentence, str(snt)))
-def getVentsSentiment(vents):
-    count = 0
-    texts =[]
-    for text in vents:
-        try:
-            if count % 1000 == 0:
-                get_vents_logger.info("[COUNT: " + str(count) + "]")
-            text = textPreProcessing.remove_special_characters(text, True)
-            text = textPreProcessing.remove_accented_chars(text)
-            text = textPreProcessing.remove_whiteList(text)
-            texts = np.append(texts, [text])
-        except Exception as e:
-            get_vents_logger.error("for text: ",text," Unexpected error: " + str(e) + traceback.format_exc())
-        count += 1
-    return texts
+# def getVentsSentiment(vents):
+#     count = 0
+#     texts =[]
+#     for text in vents:
+#         try:
+#             if count % 1000 == 0:
+#                 get_vents_logger.info("[COUNT: " + str(count) + "]")
+#             text = textPreProcessing.remove_special_characters(text, True)
+#             text = textPreProcessing.remove_accented_chars(text)
+#             text = textPreProcessing.remove_whiteList(text)
+#             texts = np.append(texts, [text])
+#         except Exception as e:
+#             get_vents_logger.error("for text: ",text," Unexpected error: " + str(e) + traceback.format_exc())
+#         count += 1
+#     return texts
 def get_embeddings(sentence):
     # Creating our token object, which is used to create documents with linguistic annotations.
     mytokens = parser(sentence)

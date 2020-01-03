@@ -4,10 +4,9 @@ from text_preprocessing import TextPreprocessing
 import xlrd
 class CSVReader:
     @staticmethod
-    def dataframe_from_file(file,cols):
-        fpath = "../data/"+file
-        data = pd.read_csv(fpath,sep=',',
-             quotechar="'",usecols=cols)
+    def dataframe_from_file():
+        fpath = "glue_data/MRPC/train.tsv"
+        data = pd.read_csv(fpath,sep='\t', error_bad_lines=False)
         data =data.dropna()
         return data
 
