@@ -123,7 +123,7 @@ class Models:
         concat_out = concatenate([concat_out, pred_gru])
         pred = Dense(2, activation='softmax')(concat_out)
         if(bert):
-            self.model - Model(self.bert_inputs,pred)
+            self.model = Model(self.bert_inputs,pred)
         else:
             self.model = Model(self.sequence_input, pred)
         self.model.compile(optimizer='adam',
