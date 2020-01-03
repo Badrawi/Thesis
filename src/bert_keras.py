@@ -126,7 +126,7 @@ def convert_text_to_examples(texts, labels):
     return InputExamples
 
 
-class BertLayer(keras.layers.Layer):
+class BertLayer(tensorflow.keras.layers.Layer):
     def __init__(
         self,
         n_fine_tune_layers=10,
@@ -216,16 +216,16 @@ class BertLayer(keras.layers.Layer):
 
 # Build model
 def build_model(max_seq_length):
-    in_id = keras.layers.Input(shape=(max_seq_length,), name="input_ids")
-    in_mask = keras.layers.Input(shape=(max_seq_length,), name="input_masks")
-    in_segment = keras.layers.Input(shape=(max_seq_length,), name="segment_ids")
+    in_id = tensorflow.keras.layers.Input(shape=(max_seq_length,), name="input_ids")
+    in_mask = tensorflow.keras.layers.Input(shape=(max_seq_length,), name="input_masks")
+    in_segment = tensorflow.keras.layers.Input(shape=(max_seq_length,), name="segment_ids")
     bert_inputs = [in_id, in_mask, in_segment]
 
     bert_output = BertLayer(n_fine_tune_layers=3)(bert_inputs)
-    dense = keras.layers.Dense(256, activation="relu")(bert_output)
-    pred = keras.layers.Dense(1, activation="sigmoid")(dense)
+    dense = tensorflow.keras.layers.Dense(256, activation="relu")(bert_output)
+    pred = tensorflow.keras.layers.Dense(1, activation="sigmoid")(dense)
 
-    model = keras.models.Model(inputs=bert_inputs, outputs=pred)
+    model = tensorflow.keras.models.Model(inputs=bert_inputs, outputs=pred)
     model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
     model.summary()
 
