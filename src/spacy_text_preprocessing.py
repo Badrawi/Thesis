@@ -100,12 +100,12 @@ def my_model():
         # sentiments = np.array(airline_data.airline_sentiment)
         texts = []
         sentiments = []
-        # df = CSVReader.dataframe_from_file()
-        # print("*****",df.columns[0])
-        # good = df.loc[df['Quality'] == 1]
-        # good = good[df.columns[3]]
-        # bad = df.loc[df['Quality'] == 0]
-        # bad = bad[df.columns[3]]
+        df = CSVReader.dataframe_from_file()
+        print("*****",df.columns[0])
+        good = df.loc[df['Quality'] == 1]
+        good = good[df.columns[3]]
+        bad = df.loc[df['Quality'] == 0]
+        bad = bad[df.columns[3]]
         # for i in range(len(sentiments)):
         #     texts[i] = textPreProcessing.remove_special_characters(texts[i], True)
         #     texts[i] = textPreProcessing.remove_accented_chars(texts[i])
@@ -119,26 +119,26 @@ def my_model():
         # with multiprocessing.Pool() as pool:
         #     positive = pool.starmap(getVentsSentiment, zip(vent_positive))
         #     negative = pool.starmap(getVentsSentiment, zip(vent_negative))
-        good = ventApi.getVents(ventApi.EMOTION_GOOD_ID)
-        energized = ventApi.getVents(ventApi.EMOTION_ENERGIZED_ID)
-        bad = ventApi.getVents(ventApi.EMOTION_BAD_ID)
-        struggle = ventApi.getVents(ventApi.EMOTION_STRUGGLE_ID)
-        neutral = ventApi.getVents(ventApi.EMOTION_NEUTRAL_ID)
+        # good = ventApi.getVents(ventApi.EMOTION_GOOD_ID)
+        # energized = ventApi.getVents(ventApi.EMOTION_ENERGIZED_ID)
+        # bad = ventApi.getVents(ventApi.EMOTION_BAD_ID)
+        # struggle = ventApi.getVents(ventApi.EMOTION_STRUGGLE_ID)
+        # neutral = ventApi.getVents(ventApi.EMOTION_NEUTRAL_ID)
         texts = np.append(texts, good)
         good_sentiments = [1] * len(good)
         sentiments = np.append(sentiments, good_sentiments)
-        energized_sentiments = [2] * len(energized)
-        texts = np.append(texts, energized)
-        sentiments = np.append(sentiments, energized_sentiments)
+        # energized_sentiments = [2] * len(energized)
+        # texts = np.append(texts, energized)
+        # sentiments = np.append(sentiments, energized_sentiments)
         texts = np.append(texts, bad)
         bad_sentiments = [-1] * len(bad)
         sentiments = np.append(sentiments, bad_sentiments)
-        texts = np.append(texts, struggle)
-        struggle_sentiments = [-2] * len(struggle)
-        sentiments = np.append(sentiments, struggle_sentiments)
-        texts = np.append(texts, neutral)
-        neutral_sentiments = [0] * len(neutral)
-        sentiments = np.append(sentiments, neutral_sentiments)
+        # texts = np.append(texts, struggle)
+        # struggle_sentiments = [-2] * len(struggle)
+        # sentiments = np.append(sentiments, struggle_sentiments)
+        # texts = np.append(texts, neutral)
+        # neutral_sentiments = [0] * len(neutral)
+        # sentiments = np.append(sentiments, neutral_sentiments)
         # for text in stress_data:
         #     text = textPreProcessing.remove_special_characters(text, True)
         #     text = textPreProcessing.remove_accented_chars(text)
@@ -156,7 +156,7 @@ def my_model():
         np.save(sentiment_cahce, sentiments)
     text_embedding = []
     sequences, word_index = get_word_index(texts)
-    categorical_sentiments = to_categorical(sentiments, num_classes=5)
+    categorical_sentiments = to_categorical(sentiments, num_classes=2)
     X_train, X_test, Y_train, Y_test = train_test_split(texts, categorical_sentiments, test_size=0.2)
     bert_path = "https://tfhub.dev/google/bert_cased_L-12_H-768_A-12/1"
     tokenizer = create_tokenizer_from_hub_module(bert_path)

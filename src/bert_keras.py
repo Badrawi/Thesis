@@ -131,7 +131,7 @@ class BertLayer(keras.layers.Layer):
         self,
         n_fine_tune_layers=10,
         pooling="mean",
-        bert_path="https://tfhub.dev/google/bert_cased_L-12_H-768_A-12/1",
+        bert_path="https://tfhub.dev/google/bert_uncased_L-12_H-768_A-12/1",
         **kwargs,
     ):
         self.n_fine_tune_layers = n_fine_tune_layers
