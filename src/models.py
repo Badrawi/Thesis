@@ -121,7 +121,7 @@ class Models:
         pred_gru = Dense(128, activation='relu')(concat_gru)
         concat_out = concatenate([pred_cnn, pred_bltsm])
         concat_out = concatenate([concat_out, pred_gru])
-        pred = Dense(2, activation='softmax')(concat_out)
+        pred = Dense(5, activation='softmax')(concat_out)
         if(bert):
             self.model = Model(self.bert_inputs,pred)
         else:
