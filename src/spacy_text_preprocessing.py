@@ -191,7 +191,7 @@ def my_model():
     #     for word, i in word_index.items():
     #         text_embedding[i] = nlp(word).vector
     #     np.save(text_embedding_cache, text_embedding)
-    models.build_myModel(text_embedding)
+    models.build_myModel(train_input_ids, train_input_masks, train_segment_ids)
     models.model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
