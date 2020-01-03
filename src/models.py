@@ -1,10 +1,10 @@
-from keras.models import Sequential,Model
-from keras.layers import Dense, LSTM, Embedding,Dropout,SpatialDropout1D,Conv1D,MaxPooling1D,GRU
-from keras.layers import Input,Bidirectional,GlobalAveragePooling1D,GlobalMaxPooling1D,concatenate
-from keras import backend as K
+import tensorflow as tf
+from tf.keras.models import Sequential,Model
+from tf.keras.layers import Dense, LSTM, Embedding,Dropout,SpatialDropout1D,Conv1D,MaxPooling1D,GRU
+from tf.keras.layers import Input,Bidirectional,GlobalAveragePooling1D,GlobalMaxPooling1D,concatenate
+from tf.keras import backend as K
 from attention_layer import AttentionDecoder
 from bert_keras import BertLayer
-import tensorflow as tf
 import tensorflow_hub as hub
 # from tensorflow.nn import space_to_depth
 class Models:

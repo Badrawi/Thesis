@@ -1,5 +1,6 @@
 import string
 import spacy
+import tensorflow as tf
 from spacy.lang.en.stop_words import STOP_WORDS
 from spacy.lang.en import English
 from csv_reader import CSVReader
@@ -8,9 +9,9 @@ import re
 import math
 import numpy as np
 from sklearn.model_selection import train_test_split
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
-from keras.utils import to_categorical
+from tf.keras.preprocessing.text import Tokenizer
+from tf.keras.preprocessing.sequence import pad_sequences
+from tf.keras.utils import to_categorical
 # from vent_api import VentApi
 from models import Models
 import traceback
