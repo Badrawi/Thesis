@@ -21,8 +21,7 @@ from keras.models import load_model
 import os
 from logger_methods import setup_logger
 import json
-import tensorflow as tf
-from keras import backend as K
+from tf.keras import backend as K
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from bert_keras import create_tokenizer_from_hub_module, convert_text_to_examples, convert_examples_to_features
 get_vents_logger = setup_logger('get_vents', 'extract_progress.log')
