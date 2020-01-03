@@ -1,8 +1,8 @@
 import tensorflow as tf
-from tf.keras.models import Sequential,Model
-from tf.keras.layers import Dense, LSTM, Embedding,Dropout,SpatialDropout1D,Conv1D,MaxPooling1D,GRU
-from tf.keras.layers import Input,Bidirectional,GlobalAveragePooling1D,GlobalMaxPooling1D,concatenate
-from tf.keras import backend as K
+from tensorflow.keras.models import Sequential,Model
+from tensorflow.keras.layers import Dense, LSTM, Embedding,Dropout,SpatialDropout1D,Conv1D,MaxPooling1D,GRU
+from tensorflow.keras.layers import Input,Bidirectional,GlobalAveragePooling1D,GlobalMaxPooling1D,concatenate
+from tensorflow.keras import backend as K
 from attention_layer import AttentionDecoder
 from bert_keras import BertLayer
 import tensorflow_hub as hub
