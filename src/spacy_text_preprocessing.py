@@ -37,6 +37,9 @@ nlp = spacy.load('en_core_web_lg')
 textPreProcessing  = TextPreprocessing()
 MAX_SEQUENCE_LENGTH = 150
 models = Models()
+global graph
+global sess
+
 tokenizer = Tokenizer(num_words=100000)
 analyser = SentimentIntensityAnalyzer()
 # Creating our tokenizer function
@@ -204,27 +207,29 @@ def my_model(sess):
     models.model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
-    fit_history = models.model.fit( [train_input_ids, train_input_masks, train_segment_ids],
-        Y_train,
-        validation_data=(
-            [test_input_ids, test_input_masks, test_segment_ids],
-            Y_test,
-        ),
-              batch_size=512, epochs=5, shuffle=True)
-    loss_history = fit_history.history["loss"]
-    numpy_loss_history = np.array(loss_history)
-    np.savetxt("loss_history.txt", numpy_loss_history, delimiter=",")
-    result = models.model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences([
-        " What happened 2 ur vegan food options?! At least say on ur site so i know I won't be able 2 eat anything for next 6 hrs #fail",
-        " I sleep hungry and It gets harder everyday",
-        "everything is great, i have lost some weight",
-        "awesome, really cool",
-        "should I play cards",
-        "I am full and inshape",
-        "is it okay to be that hungry at night?"])
-        , maxlen=MAX_SEQUENCE_LENGTH))
-    get_vents_logger.info("result: ", np.argmax(result, axis=-1), "\n")
-    print("result: ", np.argmax(result, axis=-1), "\n")
+    with graph.as_default():
+        K.set_session(sess)
+        fit_history = models.model.fit( [train_input_ids, train_input_masks, train_segment_ids],
+            Y_train,
+            validation_data=(
+                [test_input_ids, test_input_masks, test_segment_ids],
+                Y_test,
+            ),
+                batch_size=512, epochs=5, shuffle=True)
+        loss_history = fit_history.history["loss"]
+        numpy_loss_history = np.array(loss_history)
+        np.savetxt("loss_history.txt", numpy_loss_history, delimiter=",")
+        result = models.model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences([
+            " What happened 2 ur vegan food options?! At least say on ur site so i know I won't be able 2 eat anything for next 6 hrs #fail",
+            " I sleep hungry and It gets harder everyday",
+            "everything is great, i have lost some weight",
+            "awesome, really cool",
+            "should I play cards",
+            "I am full and inshape",
+            "is it okay to be that hungry at night?"])
+            , maxlen=MAX_SEQUENCE_LENGTH))
+        get_vents_logger.info("result: ", np.argmax(result, axis=-1), "\n")
+        print("result: ", np.argmax(result, axis=-1), "\n")
 def initialize_vars(sess):
     sess.run(tf.local_variables_initializer())
     sess.run(tf.global_variables_initializer())
@@ -244,6 +249,8 @@ if __name__ == "__main__":
         tf.compat.v1.disable_eager_execution()
         sess = tf.compat.v1.Session()
         initialize_vars(sess)
+        graph= tf.get_default_graph()
+
         my_model(sess)
         # vader_model()
     except Exception as e:
