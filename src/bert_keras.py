@@ -6,8 +6,8 @@ import re
 import numpy as np
 from bert.tokenization import FullTokenizer
 from tqdm import tqdm
-from tensorflow.python.keras import backend as K
-import tensorflow.python.keras
+from tensorflow.keras import backend as K
+import tensorflow.keras
 # Initialize session
 
 
@@ -126,7 +126,7 @@ def convert_text_to_examples(texts, labels):
     return InputExamples
 
 
-class BertLayer(tensorflow.python.keras.layers.Layer):
+class BertLayer(tensorflow.keras.layers.Layer):
     def __init__(
         self,
         n_fine_tune_layers=10,
@@ -216,16 +216,16 @@ class BertLayer(tensorflow.python.keras.layers.Layer):
 
 # Build model
 def build_model(max_seq_length):
-    in_id = tensorflow.python.keras.layers.Input(shape=(max_seq_length,), name="input_ids")
-    in_mask = tensorflow.python.keras.layers.Input(shape=(max_seq_length,), name="input_masks")
-    in_segment = tensorflow.python.keras.layers.Input(shape=(max_seq_length,), name="segment_ids")
+    in_id = tensorflow.keras.layers.Input(shape=(max_seq_length,), name="input_ids")
+    in_mask = tensorflow.keras.layers.Input(shape=(max_seq_length,), name="input_masks")
+    in_segment = tensorflow.keras.layers.Input(shape=(max_seq_length,), name="segment_ids")
     bert_inputs = [in_id, in_mask, in_segment]
 
     bert_output = BertLayer(n_fine_tune_layers=3)(bert_inputs)
-    dense = tensorflow.python.keras.layers.Dense(256, activation="relu")(bert_output)
-    pred = tensorflow.python.keras.layers.Dense(1, activation="sigmoid")(dense)
+    dense = tensorflow.keras.layers.Dense(256, activation="relu")(bert_output)
+    pred = tensorflow.keras.layers.Dense(1, activation="sigmoid")(dense)
 
-    model = tensorflow.python.keras.models.Model(inputs=bert_inputs, outputs=pred)
+    model = tensorflow.keras.models.Model(inputs=bert_inputs, outputs=pred)
     model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
     model.summary()
 
