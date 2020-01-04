@@ -195,10 +195,10 @@ def my_model():
     print("*******train_seg ",len(train_segment_ids))
     print("*******train_label ",len(train_segment_ids))
     print("********* test ********")
-    print("****test_ids ",len(train_input_ids))
-    print("*******test_mask ",len(train_input_masks))
-    print("*******test_seg ",len(train_segment_ids))
-    print("*******test_label ",len(train_segment_ids))
+    print("****test_ids ",len(test_input_ids))
+    print("*******test_mask ",len(test_input_masks))
+    print("*******test_seg ",len(test_segment_ids))
+    print("*******test_label ",len(test_segment_ids))
     models.build_myModel(train_input_ids, train_input_masks, train_segment_ids)
     models.model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
