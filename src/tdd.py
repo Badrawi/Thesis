@@ -2,7 +2,7 @@
 Original code from the keras backend that
 implements the _time_distributed_dense layer.
 """
-import keras.backend as K
+import tensorflow.keras.backend as K
 
 
 def _time_distributed_dense(x, w, b=None, dropout=None,
