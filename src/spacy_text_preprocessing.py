@@ -189,6 +189,16 @@ def my_model():
     #     for word, i in word_index.items():
     #         text_embedding[i] = nlp(word).vector
     #     np.save(text_embedding_cache, text_embedding)
+    print("********* train ********")
+    print("****train_ids ",len(train_input_ids))
+    print("*******train_mask ",len(train_input_masks))
+    print("*******train_seg ",len(train_segment_ids))
+    print("*******train_label ",len(train_segment_ids))
+    print("********* test ********")
+    print("****test_ids ",len(train_input_ids))
+    print("*******test_mask ",len(train_input_masks))
+    print("*******test_seg ",len(train_segment_ids))
+    print("*******test_label ",len(train_segment_ids))
     models.build_myModel(train_input_ids, train_input_masks, train_segment_ids)
     models.model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
