@@ -79,7 +79,7 @@ def get_embeddings(sentence):
     # return preprocessed list of tokens
     return mytokens
 
-def my_model():
+def my_model(sess):
     # os.environ['CUDA_VISIBLE_DEVICES'] = "0"
     # print("get gpus ",K.tensorflow_backend._get_available_gpus())
     sentiment_cahce = "sentiment_cache.npy"
@@ -244,7 +244,7 @@ if __name__ == "__main__":
         tf.compat.v1.disable_eager_execution()
         sess = tf.compat.v1.Session()
         initialize_vars(sess)
-        my_model()
+        my_model(sess)
         # vader_model()
     except Exception as e:
         get_vents_logger.error(" Unexpected error: " + str(e) + traceback.format_exc())
