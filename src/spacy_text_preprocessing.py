@@ -9,9 +9,9 @@ import re
 import math
 import numpy as np
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.utils import to_categorical
+from tensorflow.python.keras.preprocessing.text import Tokenizer
+from tensorflow.python.keras.preprocessing.sequence import pad_sequences
+from tensorflow.python.keras.utils import to_categorical
 from vent_api import VentApi
 from models import Models
 import traceback
@@ -19,7 +19,7 @@ from typing import Optional
 import os
 from logger_methods import setup_logger
 import json
-from tensorflow.keras import backend as K
+from tensorflow.python.keras import backend as K
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from bert_keras import create_tokenizer_from_hub_module, convert_text_to_examples, convert_examples_to_features
 get_vents_logger = setup_logger('get_vents', 'extract_progress.log')
