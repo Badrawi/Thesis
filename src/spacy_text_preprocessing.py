@@ -21,6 +21,7 @@ from logger_methods import setup_logger
 import json
 from tensorflow.keras import backend as K
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from tensorflow.python.keras.callbacks import TensorBoard
 from bert_keras import create_tokenizer_from_hub_module, convert_text_to_examples, convert_examples_to_features
 get_vents_logger = setup_logger('get_vents', 'extract_progress.log')
 # Create our list of punctuation marks
@@ -192,17 +193,6 @@ def my_model(sess):
     #     for word, i in word_index.items():
     #         text_embedding[i] = nlp(word).vector
     #     np.save(text_embedding_cache, text_embedding)
-    print("********* train ********")
-    print("****train_ids ",len(train_input_ids))
-    print("*******train_mask ",len(train_input_masks))
-    print("*******train_seg ",len(train_segment_ids))
-    print("*******train_label ",len(Y_train))
-    print("********* test ********")
-    print("****test_ids ",len(test_input_ids))
-    print("*******test_mask ",len(test_input_masks))
-    print("*******test_seg ",len(test_segment_ids))
-    print("*******test_label ",len(test_labels))
-    print("*******test_label ",len(Y_test))
     models.build_myModel(train_input_ids, train_input_masks, train_segment_ids)
     models.model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
