@@ -193,7 +193,7 @@ def my_model():
     print("****train_ids ",len(train_input_ids))
     print("*******train_mask ",len(train_input_masks))
     print("*******train_seg ",len(train_segment_ids))
-    print("*******train_label ",len(train_labels))
+    print("*******train_label ",len(Y_train))
     print("********* test ********")
     print("****test_ids ",len(test_input_ids))
     print("*******test_mask ",len(test_input_masks))
@@ -205,10 +205,10 @@ def my_model():
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
     fit_history = models.model.fit( [train_input_ids, train_input_masks, train_segment_ids],
-        train_labels,
+        Y_train,
         validation_data=(
             [test_input_ids, test_input_masks, test_segment_ids],
-            test_labels,
+            Y_test,
         ),
               batch_size=512, epochs=5, shuffle=True)
     loss_history = fit_history.history["loss"]
