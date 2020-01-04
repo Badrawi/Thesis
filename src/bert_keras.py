@@ -42,7 +42,7 @@ class InputExample(object):
         self.label = label
 
 
-def create_tokenizer_from_hub_module(bert_path):
+def create_tokenizer_from_hub_module(bert_path,sess):
     """Get the vocab file and casing info from the Hub module."""
     bert_module = hub.Module(bert_path)
     tokenization_info = bert_module(signature="tokenization_info", as_dict=True)
@@ -230,7 +230,5 @@ def build_model(max_seq_length):
     model.summary()
 
     return model
-
-
 
 
