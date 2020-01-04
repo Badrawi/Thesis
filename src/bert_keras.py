@@ -9,7 +9,7 @@ from tqdm import tqdm
 from tensorflow.keras import backend as K
 import tensorflow.keras
 # Initialize session
-sess = tf.compat.v1.Session()
+
 
 class PaddingInputExample(object):
     """Fake example so the num input examples is a multiple of the batch size.
@@ -232,9 +232,5 @@ def build_model(max_seq_length):
     return model
 
 
-def initialize_vars(sess):
-    sess.run(tf.local_variables_initializer())
-    sess.run(tf.global_variables_initializer())
-    sess.run(tf.tables_initializer())
-    K.set_session(sess)
+
 

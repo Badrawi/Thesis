@@ -225,6 +225,11 @@ def my_model():
         , maxlen=MAX_SEQUENCE_LENGTH))
     get_vents_logger.info("result: ", np.argmax(result, axis=-1), "\n")
     print("result: ", np.argmax(result, axis=-1), "\n")
+def initialize_vars(sess):
+    sess.run(tf.local_variables_initializer())
+    sess.run(tf.global_variables_initializer())
+    sess.run(tf.tables_initializer())
+    K.set_session(sess)
 def vader_model():
     print_sentiment_scores([
         " What happened 2 ur vegan food options?! At least say on ur site so i know I won't be able 2 eat anything for next 6 hrs #fail",
@@ -237,6 +242,8 @@ def vader_model():
 if __name__ == "__main__":
     try:
         tf.compat.v1.disable_eager_execution()
+        sess = tf.compat.v1.Session()
+        initialize_vars(sess)
         my_model()
         # vader_model()
     except Exception as e:
