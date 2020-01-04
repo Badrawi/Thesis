@@ -199,6 +199,7 @@ def my_model():
     print("*******test_mask ",len(test_input_masks))
     print("*******test_seg ",len(test_segment_ids))
     print("*******test_label ",len(test_labels))
+    print("*******test_label ",len(Y_test))
     models.build_myModel(train_input_ids, train_input_masks, train_segment_ids)
     models.model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
