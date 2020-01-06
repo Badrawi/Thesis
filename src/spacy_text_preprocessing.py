@@ -193,6 +193,8 @@ def my_model(sess):
     #     for word, i in word_index.items():
     #         text_embedding[i] = nlp(word).vector
     #     np.save(text_embedding_cache, text_embedding)
+    log_dir="logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
     models.build_myModel(train_input_ids, train_input_masks, train_segment_ids)
     models.model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
@@ -205,7 +207,7 @@ def my_model(sess):
                 [test_input_ids, test_input_masks, test_segment_ids],
                 Y_test,
             ),
-                batch_size=512, epochs=5, shuffle=True)
+                batch_size=512, epochs=5, shuffle=True,callbacks=[tensorboard_callback])
         loss_history = fit_history.history["loss"]
         numpy_loss_history = np.array(loss_history)
         np.savetxt("loss_history.txt", numpy_loss_history, delimiter=",")
