@@ -6,8 +6,7 @@ from tensorflow.keras import backend as K
 from bert_keras import BertLayer
 import tensorflow_hub as hub
 # from tensorflow.nn import space_to_depth
-global sess
-global graph
+
 class Models:
 
     embedding_dim = 500
@@ -109,6 +108,8 @@ class Models:
 
     def build_myModel(self,input_id,input_mask=None,input_segment=None,bert=True):
         base = None
+        global sess
+        global graph
         with graph.as_default():
             K.set_session(sess)
             if(bert):
