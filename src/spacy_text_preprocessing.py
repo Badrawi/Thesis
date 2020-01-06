@@ -198,7 +198,7 @@ def my_model(sess):
     models.model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
-   with sess.graph.as_default():
+    with sess.graph.as_default():
         K.set_session(sess)
         fit_history = sess.run(models.model.fit( [train_input_ids, train_input_masks, train_segment_ids],
             Y_train,
