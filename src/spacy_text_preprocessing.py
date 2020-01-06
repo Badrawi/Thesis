@@ -7,6 +7,7 @@ from csv_reader import CSVReader
 from text_preprocessing import TextPreprocessing
 import re
 import math
+import datetime
 import numpy as np
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.text import Tokenizer
@@ -207,7 +208,7 @@ def my_model(sess):
                 [test_input_ids, test_input_masks, test_segment_ids],
                 Y_test,
             ),
-                batch_size=512, epochs=5, shuffle=True,callbacks=[tensorboard_callback])
+                batch_size=512, epochs=1, shuffle=True,callbacks=[tensorboard_callback])
         loss_history = fit_history.history["loss"]
         numpy_loss_history = np.array(loss_history)
         np.savetxt("loss_history.txt", numpy_loss_history, delimiter=",")
