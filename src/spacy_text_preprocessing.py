@@ -39,8 +39,6 @@ nlp = spacy.load('en_core_web_lg')
 textPreProcessing  = TextPreprocessing()
 MAX_SEQUENCE_LENGTH = 150
 models = Models()
-global graph
-global sess
 
 tokenizer = Tokenizer(num_words=100000)
 analyser = SentimentIntensityAnalyzer()
@@ -84,7 +82,7 @@ def get_embeddings(sentence):
     # return preprocessed list of tokens
     return mytokens
 
-def my_model(sess):
+def my_model():
     # os.environ['CUDA_VISIBLE_DEVICES'] = "0"
     # print("get gpus ",K.tensorflow_backend._get_available_gpus())
     sentiment_cahce = "sentiment_cache.npy"
@@ -239,8 +237,8 @@ def vader_model():
         "is it okay to be that hungry at night?"])
 if __name__ == "__main__":
     try:
-        tf.compat.v1.disable_eager_execution()
-        sess = tf.compat.v1.Session()
+       # tf.compat.v1.disable_eager_execution()
+        sess = tf.Session()
         initialize_vars(sess)
         graph= tf.get_default_graph()
 
