@@ -82,7 +82,7 @@ def get_embeddings(sentence):
     # return preprocessed list of tokens
     return mytokens
 
-def my_model():
+def my_model(sess):
     # os.environ['CUDA_VISIBLE_DEVICES'] = "0"
     # print("get gpus ",K.tensorflow_backend._get_available_gpus())
     sentiment_cahce = "sentiment_cache.npy"
