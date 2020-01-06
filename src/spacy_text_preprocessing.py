@@ -198,15 +198,15 @@ def my_model(sess):
     models.model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
-    # with graph.as_default():
-    K.set_session(sess)
-    fit_history = sess.run(models.model.fit( [train_input_ids, train_input_masks, train_segment_ids],
-        Y_train,
-        validation_data=(
-            [test_input_ids, test_input_masks, test_segment_ids],
-            Y_test,
-        ),
-            batch_size=512, epochs=1, shuffle=True,callbacks=[tensorboard_callback]))
+   with sess.graph.as_default():
+        K.set_session(sess)
+        fit_history = sess.run(models.model.fit( [train_input_ids, train_input_masks, train_segment_ids],
+            Y_train,
+            validation_data=(
+                [test_input_ids, test_input_masks, test_segment_ids],
+                Y_test,
+            ),
+                batch_size=512, epochs=1, shuffle=True,callbacks=[tensorboard_callback]))
     loss_history = fit_history.history["loss"]
     numpy_loss_history = np.array(loss_history)
     np.savetxt("loss_history.txt", numpy_loss_history, delimiter=",")
@@ -225,7 +225,7 @@ def initialize_vars(sess):
     sess.run(tf.local_variables_initializer())
     sess.run(tf.global_variables_initializer())
     sess.run(tf.tables_initializer())
-    K.set_session(sess)
+    
 def vader_model():
     print_sentiment_scores([
         " What happened 2 ur vegan food options?! At least say on ur site so i know I won't be able 2 eat anything for next 6 hrs #fail",
@@ -238,11 +238,11 @@ def vader_model():
 if __name__ == "__main__":
     try:
        # tf.compat.v1.disable_eager_execution()
-        sess = tf.Session()
+        sess = tf.Session(graph=tf.Graph())
         initialize_vars(sess)
-        graph= tf.get_default_graph()
-
-        my_model(sess)
+        with sess.graph.as_default():
+            K.set_session(session)
+            my_model(sess)
         # vader_model()
     except Exception as e:
         get_vents_logger.error(" Unexpected error: " + str(e) + traceback.format_exc())

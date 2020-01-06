@@ -108,28 +108,24 @@ class Models:
 
     def build_myModel(self,input_id,input_mask=None,input_segment=None,bert=True):
         base = None
-        global sess
-        global graph
-        with graph.as_default():
-            K.set_session(sess)
-            if(bert):
-                base = self.build_Base_Bert_model(input_id,input_mask,input_segment)
-            else:
-                base = self.build_Base_model(input_id)
-            print("base****** ",base)
-            concat_cnn = self.build_CNN_model(base)
-            concat_blstm = self.build_BLTSM_model(base)
-            concat_gru = self.build_GRU_model(base)
-            pred_cnn = Dense(128, activation='relu')(concat_cnn)
-            pred_bltsm = Dense(128, activation='relu')(concat_blstm)
-            pred_gru = Dense(128, activation='relu')(concat_gru)
-            concat_out = concatenate([pred_cnn, pred_bltsm])
-            concat_out = concatenate([concat_out, pred_gru])
-            pred = Dense(5, activation='softmax')(concat_out)
-            if(bert):
-                self.model = Model(self.bert_inputs,pred)
-            else:
-                self.model = Model(self.sequence_input, pred)
-            self.model.compile(optimizer='adam',
-                            loss='categorical_crossentropy',
+        if(bert):
+            base = self.build_Base_Bert_model(input_id,input_mask,input_segment)
+        else:
+            base = self.build_Base_model(input_id)
+        print("base****** ",base)
+        concat_cnn = self.build_CNN_model(base)
+        concat_blstm = self.build_BLTSM_model(base)
+        concat_gru = self.build_GRU_model(base)
+        pred_cnn = Dense(128, activation='relu')(concat_cnn)
+        pred_bltsm = Dense(128, activation='relu')(concat_blstm)
+        pred_gru = Dense(128, activation='relu')(concat_gru)
+        concat_out = concatenate([pred_cnn, pred_bltsm])
+        concat_out = concatenate([concat_out, pred_gru])
+        pred = Dense(5, activation='softmax')(concat_out)
+        if(bert):
+            self.model = Model(self.bert_inputs,pred)
+        else:
+            self.model = Model(self.sequence_input, pred)
+        self.model.compile(optimizer='adam',
+                        loss='categorical_crossentropy',
                             metrics=['accuracy'])
