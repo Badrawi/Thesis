@@ -42,7 +42,13 @@ class Models:
         #                     trainable=True)
         bert_output = BertLayer()(self.bert_inputs)
         base = SpatialDropout1D(self.spatial_dropout)(bert_output)
-        return base
+        base = Dense(128, activation='relu')(base)
+        pred = Dense(5, activation='softmax')(concat_out)
+        model = Model(self.bert_inputs,pred)
+        model.compile(optimizer='adam',
+                        loss='categorical_crossentropy',
+                            metrics=['accuracy'])
+        return model
     def build_GRU_model(self,base):
         base = GRU(128, return_sequences=True)(base)
         base = GRU(128, return_sequences=True)(base)
@@ -76,12 +82,9 @@ class Models:
         max = GlobalMaxPooling1D()(base)
         return concatenate([avg,max])
 
-    def build_myModel(self,bert=True):
-        base = None
-        if(bert):
-            base = self.build_Base_Bert_model()
-        else:
-            base = self.build_Base_model(input_id)
+    def build_myModel(self,embedding_matrix):
+        
+        base = self.build_Base_model(embedding_matrix)
         print("base****** ",base)
         concat_cnn = self.build_CNN_model(base)
         concat_blstm = self.build_BLTSM_model(base)
