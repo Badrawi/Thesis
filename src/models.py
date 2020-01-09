@@ -89,7 +89,7 @@ class Models:
         pred_cnn = Dense(128, activation='relu')(concat_cnn)
         pred_bltsm = Dense(128, activation='relu')(concat_blstm)
         pred_gru = Dense(128, activation='relu')(concat_gru)
-        concat_out = concat+enate([pred_cnn, pred_bltsm])
+        concat_out = concatenate([pred_cnn, pred_bltsm])
         concat_out = concatenate([concat_out, pred_gru])
         pred = Dense(5, activation='softmax')(concat_out)
         if(bert):
