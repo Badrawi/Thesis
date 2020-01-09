@@ -18,32 +18,6 @@ class Models:
     filters = 64
     kernel_size = 3
     max_sequence_length = 150
-    def myAct(self,out):
-        return K.softmax(K.tanh(out))
-
-    def build_lstm_model(self,embedding_matrix):
-        self.model = Sequential()
-        self.model.add(
-            Embedding(input_dim=embedding_matrix.shape[0],
-                      output_dim=embedding_matrix.shape[1],
-                      weights=[embedding_matrix],
-                      input_length=150,
-                      trainable=False))
-        #self.model.add(SpatialDropout1D(0.2))
-        self.model.add(MaxPooling1D(pool_size=2))
-        self.model.add(Conv1D(filters=32, kernel_size=3, padding='same', activation='relu'))
-        self.model.add(LSTM(128,return_sequences=True))
-        self.model.add(LSTM(128, return_sequences=True))
-        # self.model.add(SpatialDropout1D(0.2))
-        # self.model.add(MaxPooling1D(pool_size=2))
-        # self.model.add(Conv1D(filters=32, kernel_size=3, padding='same', activation='relu'))
-        # self.model.add(LSTM(128, return_sequences=True))
-        # self.model.add(LSTM(128, return_sequences=True))
-        self.model.add(LSTM(128, dropout=0.2, recurrent_dropout=0.2))
-        self.model.add(Dense(2,activation='softmax'))
-        self.model.compile(optimizer='adam',
-                     loss='categorical_crossentropy',
-                     metrics=['accuracy'])
 
 
     def build_Base_model(self,embedding_matrix):
@@ -57,9 +31,7 @@ class Models:
         )(self.sequence_input)
         base = SpatialDropout1D(self.spatial_dropout)(embedding)
         return base
-    def build_Base_Bert_model(self,input_id,input_mask,input_segment):
-        tags = set()
-        tags.add("train")
+    def build_Base_Bert_model(self):
         in_id = Input(shape=(self.max_sequence_length,), name="input_ids")
         in_mask = Input(shape=(self.max_sequence_length,), name="input_masks")
         in_segment = Input(shape=(self.max_sequence_length,), name="segment_ids")
@@ -69,8 +41,6 @@ class Models:
         # bertlayer = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/1",
         #                     trainable=True)
         bert_output = BertLayer()(self.bert_inputs)
-        print("********print bert******")
-        print(bert_output.shape)
         base = SpatialDropout1D(self.spatial_dropout)(bert_output)
         return base
     def build_GRU_model(self,base):
@@ -99,14 +69,14 @@ class Models:
     def build_CNN_model(self,base):
         base = Conv1D(self.filters, kernel_size=self.kernel_size, padding='valid',
                       kernel_initializer='glorot_uniform')(base)
-      #  base = MaxPooling1D(pool_size=2)(base)
-      #  base = Conv1D(self.filters, kernel_size=self.kernel_size, padding='valid',
-        #              kernel_initializer='glorot_uniform')(base)
+       base = MaxPooling1D(pool_size=2)(base)
+       base = Conv1D(self.filters, kernel_size=self.kernel_size, padding='valid',
+                     kernel_initializer='glorot_uniform')(base)
         avg = GlobalAveragePooling1D()(base)
         max = GlobalMaxPooling1D()(base)
         return concatenate([avg,max])
 
-    def build_myModel(self,input_id,input_mask=None,input_segment=None,bert=True):
+    def build_myModel(self,bert=True):
         base = None
         if(bert):
             base = self.build_Base_Bert_model(input_id,input_mask,input_segment)
@@ -119,7 +89,7 @@ class Models:
         pred_cnn = Dense(128, activation='relu')(concat_cnn)
         pred_bltsm = Dense(128, activation='relu')(concat_blstm)
         pred_gru = Dense(128, activation='relu')(concat_gru)
-        concat_out = concatenate([pred_cnn, pred_bltsm])
+        concat_out = concat+enate([pred_cnn, pred_bltsm])
         concat_out = concatenate([concat_out, pred_gru])
         pred = Dense(5, activation='softmax')(concat_out)
         if(bert):

@@ -135,7 +135,7 @@ class BertLayer(tensorflow.keras.layers.Layer):
         **kwargs,
     ):
         self.n_fine_tune_layers = n_fine_tune_layers
-        self.trainable = True
+        self.trainable = False
         self.output_size = 768
         self.pooling = pooling
         self.bert_path = bert_path

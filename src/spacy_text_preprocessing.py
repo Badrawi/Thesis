@@ -194,21 +194,19 @@ def my_model(sess):
     #     np.save(text_embedding_cache, text_embedding)
     log_dir="logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
-    models.build_myModel(train_input_ids, train_input_masks, train_segment_ids)
-    with sess.graph.as_default():
-        K.set_session(session)
-        models.model.compile(optimizer='adam',
-                    loss='categorical_crossentropy',
-                    metrics=['accuracy'])
-    with sess.graph.as_default():
-        K.set_session(sess)
-        fit_history = sess.run(models.model.fit( [train_input_ids, train_input_masks, train_segment_ids],
-            Y_train,
-            validation_data=(
-                [test_input_ids, test_input_masks, test_segment_ids],
-                Y_test,
-            ),
-                batch_size=512, epochs=1, shuffle=True,callbacks=[tensorboard_callback]))
+    models.build_myModel()
+   
+    models.model.compile(optimizer='adam',
+                loss='categorical_crossentropy',
+                metrics=['accuracy'])
+    
+    fit_history = models.model.fit( [train_input_ids, train_input_masks, train_segment_ids],
+        Y_train,
+        validation_data=(
+            [test_input_ids, test_input_masks, test_segment_ids],
+            Y_test,
+        ),
+            batch_size=512, epochs=1, shuffle=True,callbacks=[tensorboard_callback])
     loss_history = fit_history.history["loss"]
     numpy_loss_history = np.array(loss_history)
     np.savetxt("loss_history.txt", numpy_loss_history, delimiter=",")
@@ -241,7 +239,7 @@ if __name__ == "__main__":
     try:
        # tf.compat.v1.disable_eager_execution()
         sess = tf.Session(graph=tf.Graph())
-        # initialize_vars(sess)  
+        initialize_vars(sess)  
         my_model(sess)
         # vader_model()
     except Exception as e:
