@@ -149,7 +149,7 @@ class BertLayer(tensorflow.keras.layers.Layer):
 
     def build(self, input_shape):
         self.bert = hub.Module(
-            self.bert_path, trainable=self.trainable, name=f"{self.name}_module"
+            self.bert_path, trainable=self.trainable, name="bert_model1"
         )
 
         # Remove unused layers

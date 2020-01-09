@@ -194,11 +194,18 @@ def my_model(sess):
     #     np.save(text_embedding_cache, text_embedding)
     log_dir="logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
-    models.build_myModel()
+    model = models.build_Base_Bert_model()
    
-    models.model.compile(optimizer='adam',
-                loss='categorical_crossentropy',
-                metrics=['accuracy'])
+    
+    model.fit( [train_input_ids, train_input_masks, train_segment_ids],
+        Y_train,
+        validation_data=(
+            [test_input_ids, test_input_masks, test_segment_ids],
+            Y_test,
+        ),
+            batch_size=512, epochs=1, shuffle=True,callbacks=[tensorboard_callback])
+    model.save_weights('my_model_weights.h5')
+    models.build_myModel()
     
     fit_history = models.model.fit( [train_input_ids, train_input_masks, train_segment_ids],
         Y_train,

@@ -23,13 +23,14 @@ class Models:
     def build_Base_model(self,embedding_matrix):
         self.sequence_input = Input(shape=(self.max_sequence_length,))
         embedding = Embedding(
-            input_dim=embedding_matrix.shape[0],
-            output_dim=embedding_matrix.shape[1],
-            weights=[embedding_matrix],
+            # input_dim=embedding_matrix.shape[0],
+            # output_dim=embedding_matrix.shape[1],
+            # weights=[embedding_matrix],
+            name = "bert_model1"
             input_length=self.max_sequence_length,
             trainable=False,
         )(self.sequence_input)
-        base = SpatialDropout1D(self.spatial_dropout)(embedding)
+        base = SpatialDropout1D(self.spatial_dropout,name="spatial1")(embedding)
         return base
     def build_Base_Bert_model(self):
         in_id = Input(shape=(self.max_sequence_length,), name="input_ids")
@@ -41,7 +42,7 @@ class Models:
         # bertlayer = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/1",
         #                     trainable=True)
         bert_output = BertLayer()(self.bert_inputs)
-        base = SpatialDropout1D(self.spatial_dropout)(bert_output)
+        base = SpatialDropout1D(self.spatial_dropout,name="spatial1")(bert_output)
         base = Dense(128, activation='relu')(base)
         pred = Dense(5, activation='softmax')(concat_out)
         model = Model(self.bert_inputs,pred)
