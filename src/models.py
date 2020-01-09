@@ -79,7 +79,7 @@ class Models:
     def build_myModel(self,bert=True):
         base = None
         if(bert):
-            base = self.build_Base_Bert_model(input_id,input_mask,input_segment)
+            base = self.build_Base_Bert_model()
         else:
             base = self.build_Base_model(input_id)
         print("base****** ",base)
