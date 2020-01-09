@@ -69,8 +69,8 @@ class Models:
     def build_CNN_model(self,base):
         base = Conv1D(self.filters, kernel_size=self.kernel_size, padding='valid',
                       kernel_initializer='glorot_uniform')(base)
-       base = MaxPooling1D(pool_size=2)(base)
-       base = Conv1D(self.filters, kernel_size=self.kernel_size, padding='valid',
+        base = MaxPooling1D(pool_size=2)(base)
+        base = Conv1D(self.filters, kernel_size=self.kernel_size, padding='valid',
                      kernel_initializer='glorot_uniform')(base)
         avg = GlobalAveragePooling1D()(base)
         max = GlobalMaxPooling1D()(base)
