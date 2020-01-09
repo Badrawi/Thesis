@@ -196,9 +196,9 @@ def my_model(sess):
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
     models.build_myModel()
    
-    models.model.compile(optimizer='adam',
-                loss='categorical_crossentropy',
-                metrics=['accuracy'])
+    # models.model.compile(optimizer='adam',
+    #             loss='categorical_crossentropy',
+    #             metrics=['accuracy'])
     
     fit_history = models.model.fit( [train_input_ids, train_input_masks, train_segment_ids],
         Y_train,
