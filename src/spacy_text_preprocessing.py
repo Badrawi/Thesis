@@ -206,7 +206,7 @@ def my_model(sess):
             batch_size=512, epochs=1, shuffle=True,callbacks=[tensorboard_callback])
     model.save_weights('my_model_weights.h5')
     models.build_myModel()
-    
+    model.load_weights('my_model_weights.h5',by_name=True)
     fit_history = models.model.fit( [train_input_ids, train_input_masks, train_segment_ids],
         Y_train,
         validation_data=(
