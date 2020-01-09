@@ -27,7 +27,7 @@ class Models:
             # output_dim=embedding_matrix.shape[1],
             # weights=[embedding_matrix],
             name = "bert_model1"
-            input_length=self.max_sequence_length,
+            # input_length=self.max_sequence_length,
             trainable=False,
         )(self.sequence_input)
         base = SpatialDropout1D(self.spatial_dropout,name="spatial1")(embedding)
