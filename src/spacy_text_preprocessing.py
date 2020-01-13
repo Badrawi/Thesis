@@ -94,32 +94,9 @@ def my_model(sess):
         sentiments = np.load(sentiment_cahce, allow_pickle=True)
         texts = np.load(text_cache, allow_pickle=True)
     else:
-        # airline_data = CSVReader.dataframe_from_file("Tweets.csv", ['airline_sentiment', 'text'])
-        # stress_data = CSVReader.dataframe_from_file("twitter.csv", ['original_text']).original_text
-        # progress_data = CSVReader.dataframe_from_file("fit.csv", ['original_text']).original_text
-        # texts = np.array(airline_data.text)
-        # sentiments = np.array(airline_data.airline_sentiment)
         texts = []
         sentiments = []
-        # df = CSVReader.dataframe_from_file()
-        # print("*****",df.columns[0])
-        # good = df.loc[df['Quality'] == 1]
-        # good = good[df.columns[3]]
-        # bad = df.loc[df['Quality'] == 0]
-        # bad = bad[df.columns[3]]
-        # for i in range(len(sentiments)):
-        #     texts[i] = textPreProcessing.remove_special_characters(texts[i], True)
-        #     texts[i] = textPreProcessing.remove_accented_chars(texts[i])
-        #     texts[i] = textPreProcessing.remove_whiteList(texts[i])
-        #     if (sentiments[i] == "neutral"):
-        #         sentiments[i] = 0
-        #     elif(sentiments[i] == "positive"):
-        #         sentiments[i] = 1
-        #     else:
-        #         sentiments[i] = -1
-        # with multiprocessing.Pool() as pool:
-        #     positive = pool.starmap(getVentsSentiment, zip(vent_positive))
-        #     negative = pool.starmap(getVentsSentiment, zip(vent_negative))
+       
         good = ventApi.getVents(ventApi.EMOTION_GOOD_ID)
         energized = ventApi.getVents(ventApi.EMOTION_ENERGIZED_ID)
         bad = ventApi.getVents(ventApi.EMOTION_BAD_ID)
@@ -140,18 +117,7 @@ def my_model(sess):
         texts = np.append(texts, neutral)
         neutral_sentiments = [0] * len(neutral)
         sentiments = np.append(sentiments, neutral_sentiments)
-        # for text in stress_data:
-        #     text = textPreProcessing.remove_special_characters(text, True)
-        #     text = textPreProcessing.remove_accented_chars(text)
-        #     text = textPreProcessing.remove_whiteList(text)
-        #     texts = np.append(texts,[text])
-        #     sentiments = np.append(sentiments,[-2])
-        # for text in progress_data:
-        #     text = textPreProcessing.remove_special_characters(text, True)
-        #     text = textPreProcessing.remove_accented_chars(text)
-        #     text = textPreProcessing.remove_whiteList(text)
-        #     texts = np.append(texts,[text])
-        #     sentiments = np.append(sentiments,[1])
+
 
         np.save(text_cache, texts)
         np.save(sentiment_cahce, sentiments)
@@ -185,25 +151,14 @@ def my_model(sess):
         train_segment_ids=train_segment_ids, train_labels=train_labels)
         np.savez('test.npz',test_input_ids=test_input_ids, test_input_masks=test_input_masks, 
         test_segment_ids=test_segment_ids, test_labels=test_labels)
-    # if os.path.isfile(text_embedding_cache):
-    #     text_embedding = np.load(text_embedding_cache, allow_pickle=True)
-    # else:
-    #     text_embedding = np.zeros((len(word_index) + 1, 300))
-    #     for word, i in word_index.items():
-    #         text_embedding[i] = nlp(word).vector
-    #     np.save(text_embedding_cache, text_embedding)
     log_dir="logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
     models.build_myModel()
-   
-    # models.model.compile(optimizer='adam',
-    #             loss='categorical_crossentropy',
-    #             metrics=['accuracy'])
     
-    fit_history = models.model.fit( [train_input_ids, train_input_masks, train_segment_ids],
+    fit_history = models.model.fit( X_train,
         Y_train,
         validation_data=(
-            [test_input_ids, test_input_masks, test_segment_ids],
+            X_test,
             Y_test,
         ),
             batch_size=512, epochs=1, shuffle=True,callbacks=[tensorboard_callback])

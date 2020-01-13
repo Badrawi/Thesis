@@ -3,7 +3,7 @@ from tensorflow.keras.models import Sequential,Model
 from tensorflow.keras.layers import Dense, LSTM, Embedding,Dropout,SpatialDropout1D,Conv1D,MaxPooling1D,GRU
 from tensorflow.keras.layers import Input,Bidirectional,GlobalAveragePooling1D,GlobalMaxPooling1D,concatenate
 from tensorflow.keras import backend as K
-from bert_keras import BertLayer
+from bert_keras2 import BertLayer
 import tensorflow_hub as hub
 # from tensorflow.nn import space_to_depth
 
@@ -32,16 +32,18 @@ class Models:
         base = SpatialDropout1D(self.spatial_dropout)(embedding)
         return base
     def build_Base_Bert_model(self):
-        in_id = Input(shape=(self.max_sequence_length,), name="input_ids")
-        in_mask = Input(shape=(self.max_sequence_length,), name="input_masks")
-        in_segment = Input(shape=(self.max_sequence_length,), name="segment_ids")
-        self.bert_inputs = [in_id, in_mask, in_segment]
+        # in_id = Input(shape=(self.max_sequence_length,), name="input_ids")
+        # in_mask = Input(shape=(self.max_sequence_length,), name="input_masks")
+        # in_segment = Input(shape=(self.max_sequence_length,), name="segment_ids")
+        self.bert_inputs = Input(shape=(1,))
     
         # Instantiate the custom Bert Layer defined above
         # bertlayer = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/1",
         #                     trainable=True)
-        bert_output = BertLayer()(self.bert_inputs)
-        base = SpatialDropout1D(self.spatial_dropout)(bert_output)
+        encoder = BertLayer(bert_path="https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/1", seq_len=self.max_sequence_length, 
+                    tune_embeddings=True, do_preprocessing=True,
+                    pooling='mean', n_tune_layers=3, verbose=True)
+        base = SpatialDropout1D(self.spatial_dropout)(encoder(self.bert_inputs))
         return base
     def build_GRU_model(self,base):
         base = GRU(128, return_sequences=True)(base)
