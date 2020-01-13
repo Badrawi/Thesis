@@ -29,10 +29,10 @@ class BertLayer(tf.keras.layers.Layer):
         super(BertLayer, self).__init__(**kwargs)
 
     def build(self, input_shape):
-
+        print("here")
         self.bert = hub.load(self.bert_path, 
                                trainable=self.trainable, name=f"{self.name}_module")
-
+        print("here2")
         trainable_layers = []
         if self.tune_embeddings:
             trainable_layers.append("embeddings")
