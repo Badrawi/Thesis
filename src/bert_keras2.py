@@ -2,7 +2,7 @@ import os
 import tensorflow as tf
 import tensorflow_hub as hub
 
-from finetuning.text_preprocessing import build_preprocessor
+from text_preprocessing2 import build_preprocessor
 
 
 class BertLayer(tf.keras.layers.Layer):
