@@ -8,7 +8,7 @@ from text_preprocessing2 import build_preprocessor
 class BertLayer(tf.keras.layers.Layer):
     def __init__(self, bert_path, seq_len=64, n_tune_layers=3, 
                  pooling="cls", do_preprocessing=True, verbose=False,
-                 tune_embeddings=False, trainable=True, **kwargs):
+                 tune_embeddings=False, trainable=False, **kwargs):
 
         self.trainable = trainable
         self.n_tune_layers = n_tune_layers
