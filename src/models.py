@@ -40,7 +40,7 @@ class Models:
         # Instantiate the custom Bert Layer defined above
         # bertlayer = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/1",
         #                     trainable=True)
-        encoder = BertLayer(bert_path="https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/1", seq_len=self.max_sequence_length, 
+        encoder = BertLayer(bert_path="../../bert/", seq_len=self.max_sequence_length, 
                     tune_embeddings=True, do_preprocessing=True,
                     pooling='mean', n_tune_layers=3, verbose=True)
         base = SpatialDropout1D(self.spatial_dropout)(encoder(self.bert_inputs))
