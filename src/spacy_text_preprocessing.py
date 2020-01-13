@@ -193,8 +193,8 @@ def vader_model():
 if __name__ == "__main__":
     try:
        # tf.compat.v1.disable_eager_execution()
-        sess = tf.Session()
-        initialize_vars(sess)  
+        # sess = tf.Session()
+        # initialize_vars(sess)  
         my_model(sess)
         # vader_model()
     except Exception as e:
