@@ -161,7 +161,7 @@ def my_model(sess):
             X_test,
             Y_test,
         ),
-            batch_size=512, epochs=1, shuffle=True,callbacks=[tensorboard_callback])
+            batch_size=32, epochs=1, shuffle=True,callbacks=[tensorboard_callback])
     loss_history = fit_history.history["loss"]
     numpy_loss_history = np.array(loss_history)
     np.savetxt("loss_history.txt", numpy_loss_history, delimiter=",")
