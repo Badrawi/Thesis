@@ -30,7 +30,7 @@ class BertLayer(tf.keras.layers.Layer):
 
     def build(self, input_shape):
         print("here")
-        self.bert = hub.Module(self.bert_path, 
+        self.bert = hub.Module(self.build_abspath(self.bert_path), 
                                trainable=self.trainable, name=f"{self.name}_module")
         print("here2")
         trainable_layers = []
