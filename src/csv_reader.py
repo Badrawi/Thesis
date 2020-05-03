@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from text_preprocessing import TextPreprocessing
 import xlrd
 class CSVReader:
     @staticmethod
@@ -10,4 +9,9 @@ class CSVReader:
              quotechar="'",usecols=cols)
         data =data.dropna()
         return data
-
+    @staticmethod
+    def dataframe_from_txt(file):
+        fpath = "../data/"+file
+        data = pd.read_csv(fpath,sep=',',usecols=["num","texts"])
+        # data.columns = ["num","texts"]
+        return data

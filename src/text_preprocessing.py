@@ -7,20 +7,20 @@ from nltk.tokenize import sent_tokenize
 from nltk.corpus import gutenberg
 import re
 import unicodedata
-# nltk.download('stopwords')
-# nltk.download('punkt')
-# nltk.download('wordnet')
-# nltk.download('averaged_perceptron_tagger')
-# nltk.download('gutenberg')
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('gutenberg')
 
 
 class TextPreprocessing:
 
-    # def __init__(self):
-    #     # self.stop_words = set(stopwords.words('english'))
-    #     # self.wordnet_lemmatizer = WordNetLemmatizer()
-    #     # self.lemmatizer = WordNetLemmatizer()
-    #     # self.stemmer = PorterStemmer()
+    def __init__(self):
+        self.stop_words = set(stopwords.words('english'))
+        self.wordnet_lemmatizer = WordNetLemmatizer()
+        self.lemmatizer = WordNetLemmatizer()
+        self.stemmer = PorterStemmer()
 
     def tokenize(self, text):
             return nltk.word_tokenize(text)

@@ -5,3 +5,7 @@ data
 *.txt
 *.log
 *.npy
+src/logs/scalars/**
+*.h5
+*.out
+src/savedModel/**
