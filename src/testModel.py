@@ -205,7 +205,7 @@ def model_test():
     categ_test = to_categorical(Y_test,num_classes=5)
     tokenizer = Tokenizer(num_words=300000)
     tokenizer.fit_on_texts(all_texts)
-    model = load_model("saved-model3-60.h5")
+    model = load_model("savedModel2/saved-model3-60.h5")
     result = np.argmax(model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(X_test),maxlen=75)),axis=-1)
     cat_result = to_categorical(result,num_classes=5)
     print("f1 ",f1(categ_test,cat_result))
