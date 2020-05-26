@@ -202,14 +202,16 @@ def model_test():
              count+=1
     X_test = np.append(X_test,neutral)
     Y_test = np.append(Y_test,[0]*len(neutral))
-    categ_test = to_categorical(Y_test,num_classes=5)
+    Y_test[Y_test==-1] = 4
+    Y_test[Y_test==-2] = 3
+    # categ_test = to_categorical(Y_test,num_classes=5)
     tokenizer = Tokenizer(num_words=300000)
     tokenizer.fit_on_texts(all_texts)
     model = load_model("savedModel2/saved-model3-60.h5")
     result = model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(X_test),maxlen=75))
     result = np.argmax(result,axis=-1)
-    cat_result = to_categorical(result,num_classes=5)
-    print("f1 ",f1(categ_test,cat_result))
+    # cat_result = to_categorical(result,num_classes=5)
+    print("f1 ",f1(Y_test,result))
 
 if __name__ == "__main__":
     # train_BLSTM()
