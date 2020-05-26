@@ -211,7 +211,8 @@ def model_test():
     result = model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(X_test),maxlen=75))
     result = np.argmax(result,axis=-1)
     # cat_result = to_categorical(result,num_classes=5)
-    print("f1 ",f1(Y_test,result))
+    # print("f1 ",f1(Y_test,result))
+    print("result ",result)
 
 if __name__ == "__main__":
     # train_BLSTM()
