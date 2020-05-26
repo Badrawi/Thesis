@@ -33,8 +33,7 @@ def test_all_models():
     #                                                                                  "is it okay to be that hungry at night?"])
     #                                              ,maxlen=75))
     # print("result: ", np.argmax(result,axis=-1),"\n")
-    results = model.evaluate(pad_sequences(tokenizer.texts_to_sequences(texts[500000:505000]),maxlen=75), categorical_sentiments[500000:505000], batch_size=128)
-    print('test loss, test acc:', results)
+    
 
 def train_BLSTM():
     embeddings = np.load('text_embedding.npy', allow_pickle=True)
@@ -156,32 +155,41 @@ def test_vader():
     print("pos ",(true_positive/count_positive), "mot ",(true_motivated/count_motivated), "neutral ",(true_neutral/count_neutral)
     , "neg ",(true_negative/count_negative), "strug ",(true_strug/count_strug))
 
+def f1(y_true, y_pred):
+        def recall(y_true, y_pred):
+            """Recall metric.
+            Only computes a batch-wise average of recall.
+            Computes the recall, a metric for multi-label classification of
+            how many relevant items are selected.
+            """
+            true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+            possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+            recall = true_positives / (possible_positives + K.epsilon())
+            return recall
+
+        def precision(y_true, y_pred):
+            """Precision metric.
+            Only computes a batch-wise average of precision.
+            Computes the precision, a metric for multi-label classification of
+            how many selected items are relevant.
+            """
+            true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+            predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+            precision = true_positives / (predicted_positives + K.epsilon())
+            return precision
+        precision = precision(y_true, y_pred)
+        recall = recall(y_true, y_pred)
+        return 2*((precision*recall)/(precision+recall+K.epsilon()))
 
 def model_test():
     print("here")
     sentiments = np.load('sentiments.npy', allow_pickle=True)
     texts = np.load('texts.npy', allow_pickle=True)
     all_texts = np.load('text_cache.npy', allow_pickle=True)
-    positive = []
-    negative = []
     neutral = []
-    motivated = []
-    struggling =[]
 
     _, X_test, _, Y_test = train_test_split(texts, sentiments, test_size=0.01)
     print("here ",len(Y_test))
-    for i in range(len(Y_test)):
-        if(Y_test[i] == 1):
-            positive = np.append(positive,X_test[i])
-        if(Y_test[i] == 2):
-            motivated = np.append(motivated,X_test[i])
-        if(Y_test[i] == 0):
-            neutral = np.append(neutral,X_test[i])
-        if(Y_test[i] == -1):
-            negative = np.append(negative,X_test[i])
-        if(Y_test[i] == -2):
-            struggling = np.append(struggling,X_test[i])
-
     airline_data = CSVReader.dataframe_from_file("Tweets.csv",['airline_sentiment','text'])
     airline_text = np.array(airline_data.text)
     airline_sentiment = np.array(airline_data.airline_sentiment)
@@ -192,28 +200,15 @@ def model_test():
         if(airline_sentiment[i] == "neutral"):
              neutral = np.append(neutral,airline_text[i])
              count+=1
-    print("positive ",len(positive))
-    print("negative ",len(negative))
-    print("neutral ",len(neutral))
-    print("motivated ",len(motivated))
-    print("struggling ",len(struggling))
+    X_test = np.append(X_test,neutral)
+    Y_test = np.append(Y_test,[0]*len(neutral))
+    categ_test = to_categorical(Y_test,num_classes=5)
     tokenizer = Tokenizer(num_words=300000)
     tokenizer.fit_on_texts(all_texts)
     model = load_model("saved-model3-60.h5")
-    result =  np.argmax(model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(positive[:1000]),maxlen=75)),axis=-1)
-    true_positive = np.count_nonzero(result == 1)
-    print("TP ",true_positive)
-    result =  np.argmax(model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(motivated[:1000]),maxlen=75)),axis=-1)
-    true_motivated = np.count_nonzero(result == 2)
-    result =  np.argmax(model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(negative[:1000]),maxlen=75)),axis=-1)
-    true_negative = np.count_nonzero(result == 4)
-    result =  np.argmax(model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(struggling[:1000]),maxlen=75)),axis=-1)
-    true_strug = np.count_nonzero(result == 3)
-    result =  np.argmax(model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(neutral[:1000]),maxlen=75)),axis=-1)
-    print("result ",result)
-    true_neutral = np.count_nonzero(result == 0)
-    print("pos ",(true_positive/1000), "mot ",(true_motivated/1000), "neutral ",(true_neutral/1000)
-       , "neg ",(true_negative/1000), "strug ",(true_strug/1000))
+    result = np.argmax(model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(X_test),maxlen=75)),axis=-1)
+    cat_result = to_categorical(result,num_classes=5)
+    print("f1 ",f1(categ_test,cat_result))
 
 if __name__ == "__main__":
     # train_BLSTM()
