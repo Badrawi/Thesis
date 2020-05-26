@@ -14,6 +14,7 @@ from datetime import datetime
 from tensorflow.keras import backend as K
 from sklearn.metrics import classification_report
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from sklearn.metrics import f1_score
 
 def test_all_models():
     # sentiments = np.load('sentiment_cache.npy', allow_pickle=True)
@@ -211,7 +212,7 @@ def model_test():
     result = model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(X_test),maxlen=75))
     result = np.argmax(result,axis=-1)
     # cat_result = to_categorical(result,num_classes=5)
-    print("f1 ",f1(Y_test,result))
+    print("f1 ",f1_score(Y_test,result, average='weighted'))
     # print("result ",result)
 
 if __name__ == "__main__":
