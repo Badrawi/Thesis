@@ -61,25 +61,7 @@ if __name__ == "__main__":
     sentiments = np.load('sentiments.npy', allow_pickle=True)
     texts = np.load('texts.npy', allow_pickle=True)
     all_texts = np.load('text_cache.npy', allow_pickle=True)
-    tokenizer = Tokenizer(num_words=300000, oov_token=None)
-    tokenizer.fit_on_texts(all_texts)
     _, X_test, _, Y_test = train_test_split(texts, sentiments, test_size=0.01)
-    positive = []
-    negative = []
-    neutral = []
-    motivated = []
-    struggling =[]
-    for i in range(len(Y_test)):
-        if(Y_test[i] == 1):
-            positive = np.append(positive,X_test[i])
-        if(Y_test[i] == 2):
-            motivated = np.append(motivated,X_test[i])
-        if(Y_test[i] == 0):
-            neutral = np.append(neutral,X_test[i])
-        if(Y_test[i] == -1):
-            negative = np.append(negative,X_test[i])
-        if(Y_test[i] == -2):
-            struggling = np.append(struggling,X_test[i])
 
     airline_data = CSVReader.dataframe_from_file("Tweets.csv",['airline_sentiment','text'])
     airline_text = np.array(airline_data.text)
@@ -89,7 +71,8 @@ if __name__ == "__main__":
         if(count > 1000):
             break
         if(airline_sentiment[i] == "neutral"):
-             neutral = np.append(neutral,airline_text[i])
+             X_test = np.append(X_test,airline_text[i])
+             Y_test = np.append(Y_test,[0])
              count+=1
     models = []
     models = np.append(models,load_model("ensemble_bgru.h5"))
@@ -99,31 +82,10 @@ if __name__ == "__main__":
     models = np.append(models,load_model("ensemble_blstm.h5"))
     tokenizer = Tokenizer(num_words=300000)
     tokenizer.fit_on_texts(all_texts)
-
-    yhats = [model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(positive[:1000]),maxlen=75)) for model in models]
+    Y_test[Y_test==-1] = 4
+    Y_test[Y_test==-2] = 3
+    yhats = [model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(X_test),maxlen=75)) for model in models]
     yhats = np.array(yhats)
     summed = np.sum(yhats, axis=0)
     result = np.argmax(summed, axis=1)
-    true_positive = np.count_nonzero(result == 1)
-    yhats = [model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(motivated[:1000]),maxlen=75)) for model in models]
-    yhats = np.array(yhats)
-    summed = np.sum(yhats, axis=0)
-    result = np.argmax(summed, axis=1)
-    true_motivated = np.count_nonzero(result == 2)
-    yhats = [model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(neutral[:1000]),maxlen=75)) for model in models]
-    yhats = np.array(yhats)
-    summed = np.sum(yhats, axis=0)
-    result = np.argmax(summed, axis=1)
-    true_neutral = np.count_nonzero(result == 0)
-    yhats = [model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(negative[:1000]),maxlen=75)) for model in models]
-    yhats = np.array(yhats)
-    summed = np.sum(yhats, axis=0)
-    result = np.argmax(summed, axis=1)
-    true_negative = np.count_nonzero(result == 4)
-    yhats = [model.predict_on_batch(pad_sequences(tokenizer.texts_to_sequences(struggling[:1000]),maxlen=75)) for model in models]
-    yhats = np.array(yhats)
-    summed = np.sum(yhats, axis=0)
-    result = np.argmax(summed, axis=1)
-    true_strug = np.count_nonzero(result == 3)
-    print("pos ",(true_positive/1000), "mot ",(true_motivated/1000), "neutral ",(true_neutral/1000)
-       , "neg ",(true_negative/1000), "strug ",(true_strug/1000))
+    print("f1 ",f1_score(Y_test,result, average='weighted'))
