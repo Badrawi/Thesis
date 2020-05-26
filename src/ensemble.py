@@ -88,4 +88,4 @@ if __name__ == "__main__":
     yhats = np.array(yhats)
     summed = np.sum(yhats, axis=0)
     result = np.argmax(summed, axis=1)
-    print("f1 ",f1_score(Y_test,result, average='weighted'))
+    print("f1 ",precision_score(Y_test,result, average=None))
